@@ -404,7 +404,7 @@ function Input({ label, name, required, type = "text", placeholder }: { label: s
         type={type}
         required={required}
         placeholder={placeholder}
-        className="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition-colors focus:border-[color:var(--fc)]"
+        className="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
         style={{ border: `1px solid ${BORDER}`, color: TEXT, background: "#fff" }}
         onFocus={(e) => (e.currentTarget.style.borderColor = NAVY)}
         onBlur={(e) => (e.currentTarget.style.borderColor = BORDER)}
