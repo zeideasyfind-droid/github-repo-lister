@@ -461,28 +461,24 @@ function Hero() {
             Solutions handles it all across Bangalore. We help owners and clients move faster, avoid
             delays, and make the right decisions.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
             <button
               onClick={() => scrollToId("#lead-form")}
-              className="rounded-lg px-6 py-3 font-bold transition-transform hover:-translate-y-0.5"
+              className="rounded-lg px-8 py-4 text-base font-bold shadow-lg transition-transform hover:-translate-y-1"
               style={{ background: GOLD, color: NAVY }}
             >
               Talk to Us
             </button>
             <button
               onClick={() => scrollToId("#how-it-works")}
-              className="rounded-lg px-6 py-3 font-semibold transition-colors"
-              style={{
-                border: "1px solid rgba(255,255,255,0.5)",
-                color: "#fff",
-                background: "transparent",
-              }}
+              className="rounded-lg border-2 px-8 py-4 text-base font-bold text-white transition-all hover:bg-white/10"
+              style={{ borderColor: "rgba(255,255,255,0.3)" }}
             >
               How It Works
             </button>
           </div>
         </div>
-        <div className="md:pt-2">
+        <div className="relative z-10 flex items-center justify-center">
           <ContactForm />
         </div>
       </div>
@@ -498,7 +494,7 @@ function TrackRecord() {
     { n: BUSINESS_CONFIG.stats.deals, l: "Deals Closed" },
   ];
   return (
-    <section id="track-record" className="py-16 md:py-24" style={{ background: SURFACE }}>
+    <section className="py-12 md:py-16" style={{ background: SURFACE }}>
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <SectionLabel>Our Track Record</SectionLabel>
         <div className="mt-8 grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-10">
@@ -535,48 +531,50 @@ function ServiceModal({ service, onClose }: { service: Service; onClose: () => v
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <>
       <div
-        className="absolute inset-0 backdrop-blur-sm"
+        className="fixed inset-0 z-50 backdrop-blur-sm"
         style={{ background: "rgba(26, 58, 92, 0.6)" }}
         onClick={onClose}
       />
-      <div className="relative w-full max-w-lg overflow-y-auto max-h-[90vh] rounded-2xl bg-white p-6 shadow-2xl md:p-8">
-        <button
-          onClick={onClose}
-          className="absolute right-4 top-4 p-2 text-navy/40 hover:text-navy"
-        >
-          <X size={24} />
-        </button>
-        <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-surface text-navy">
-          <service.icon size={28} />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+        <div className="relative w-full max-w-lg overflow-y-auto max-h-[90vh] rounded-2xl bg-white p-6 shadow-2xl md:p-8 pointer-events-auto">
+          <button
+            onClick={onClose}
+            className="absolute right-4 top-4 p-2 text-navy/40 hover:text-navy"
+          >
+            <X size={24} />
+          </button>
+          <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-surface text-navy">
+            <service.icon size={28} />
+          </div>
+          <h3 className="mt-6 text-2xl font-bold text-navy">{service.name}</h3>
+          <p className="mt-3 text-muted leading-relaxed">{service.desc}</p>
+          <div className="mt-8">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-navy/40">
+              Key Deliverables
+            </h4>
+            <ul className="mt-4 space-y-3">
+              {service.bullets.map((b) => (
+                <li key={b} className="flex items-start gap-3 text-sm font-medium text-navy/80">
+                  <CheckCircle size={18} className="mt-0.5 shrink-0 text-gold" />
+                  {b}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button
+            onClick={() => {
+              onClose();
+              scrollToId("#lead-form");
+            }}
+            className="mt-10 w-full rounded-xl bg-gold py-4 font-bold text-navy transition-transform hover:scale-[1.02]"
+          >
+            Enquire About This Service
+          </button>
         </div>
-        <h3 className="mt-6 text-2xl font-bold text-navy">{service.name}</h3>
-        <p className="mt-3 text-muted leading-relaxed">{service.desc}</p>
-        <div className="mt-8">
-          <h4 className="text-sm font-bold uppercase tracking-wider text-navy/40">
-            Key Deliverables
-          </h4>
-          <ul className="mt-4 space-y-3">
-            {service.bullets.map((b) => (
-              <li key={b} className="flex items-start gap-3 text-sm font-medium text-navy/80">
-                <CheckCircle size={18} className="mt-0.5 shrink-0 text-gold" />
-                {b}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <button
-          onClick={() => {
-            onClose();
-            scrollToId("#lead-form");
-          }}
-          className="mt-10 w-full rounded-xl bg-gold py-4 font-bold text-navy transition-transform hover:scale-[1.02]"
-        >
-          Enquire About This Service
-        </button>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -877,7 +875,7 @@ function LeadForm() {
                   <CheckCircle2 size={30} />
                 </div>
                 <h3 className="text-lg font-bold" style={{ color: NAVY }}>
-                  Thank you! We've received your requirement.
+                  Thank you! We'll call you shortly.
                 </h3>
                 <p className="mt-2 text-sm text-gray-500">Our team will get back to you shortly.</p>
                 <button
@@ -1035,7 +1033,11 @@ function LeadForm() {
                   <div className="text-sm font-bold uppercase tracking-wider text-gray-400">
                     Visit Us
                   </div>
-                  <div className="mt-1 text-sm text-gray-500">Koramangala, Bangalore</div>
+                  <div className="mt-1 text-sm leading-relaxed text-gray-500">
+                    Prestige Atlanta, 1, 80 Feet Rd,<br />
+                    Koramangala 8th Block,<br />
+                    Bengaluru, Karnataka 560034
+                  </div>
                   <a
                     href={BUSINESS_CONFIG.googleMapsUrl}
                     target="_blank"
@@ -1043,7 +1045,7 @@ function LeadForm() {
                     className="mt-3 block font-bold"
                     style={{ color: GOLD }}
                   >
-                    View on Maps
+                    View Our Google Business Profile
                   </a>
                 </div>
               </div>
@@ -1071,12 +1073,12 @@ function LeadForm() {
 
 function Footer() {
   return (
-    <footer className="bg-white py-16" style={{ borderTop: `1px solid ${BORDER}` }}>
+    <footer className="py-16" style={{ background: NAVY, borderTop: `1px solid ${BORDER}` }}>
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <div className="flex flex-col items-center justify-between gap-10 md:flex-row">
           <div className="flex flex-col items-center md:items-start">
             <Logo />
-            <p className="mt-6 max-w-xs text-center text-sm leading-relaxed text-gray-500 md:text-left">
+            <p className="mt-6 max-w-xs text-center text-sm leading-relaxed text-white/60 md:text-left">
               Bangalore's most trusted property partner. We simplify your real estate journey from
               start to finish.
             </p>
@@ -1091,7 +1093,7 @@ function Footer() {
                   scrollToId(l.href);
                 }}
                 className="text-sm font-semibold transition-colors hover:text-gold"
-                style={{ color: NAVY }}
+                style={{ color: "#fff" }}
               >
                 {l.label}
               </a>
@@ -1100,12 +1102,12 @@ function Footer() {
         </div>
         <div
           className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row"
-          style={{ borderColor: BORDER }}
+          style={{ borderColor: "rgba(255,255,255,0.1)" }}
         >
           <div className="text-xs font-medium text-gray-400">
             © 2026 EasyFind Property Solutions. All rights reserved.
           </div>
-          <div className="text-xs font-bold uppercase tracking-widest text-gray-300">
+          <div className="text-xs font-bold uppercase tracking-widest text-white/20">
             Built with trust in Bangalore.
           </div>
         </div>

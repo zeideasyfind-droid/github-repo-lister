@@ -71,7 +71,7 @@ const ContactForm: React.FC = () => {
           <CheckCircle2 size={30} />
         </div>
         <h3 className="text-lg font-bold" style={{ color: NAVY }}>
-          Thank you! We'll call you back shortly.
+          Thank you! We'll call you shortly.
         </h3>
         <p className="mt-2 text-sm text-gray-500">
           Our team will reach out on the number you shared.
