@@ -8,7 +8,6 @@ const ContactForm: React.FC = () => {
     location: '',
     budget: '',
     details: '',
-    formType: '',
   });
 
   const [submissionStatus, setSubmissionStatus] = useState<string | null>(null);
@@ -29,7 +28,7 @@ const ContactForm: React.FC = () => {
     payload.append('entry.616237414', formData.location); // Location
     payload.append('entry.1733021043', formData.budget); // Budget
     payload.append('entry.1656301094', formData.details); // Details
-    payload.append('entry.128907828', formData.formType); // Form Type
+    payload.append('entry.128907828', 'Website Hero Form'); // Form Type (auto-tagged)
 
     try {
       const response = await fetch(formUrl, {
@@ -52,7 +51,6 @@ const ContactForm: React.FC = () => {
         location: '',
         budget: '',
         details: '',
-        formType: '',
       });
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -130,17 +128,6 @@ const ContactForm: React.FC = () => {
           rows={4}
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         ></textarea>
-      </div>
-      <div>
-        <label htmlFor="formType" className="block text-sm font-medium text-gray-700">Form Type</label>
-        <input
-          type="text"
-          name="formType"
-          id="formType"
-          value={formData.formType}
-          onChange={handleChange}
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
       </div>
       <button
         type="submit"

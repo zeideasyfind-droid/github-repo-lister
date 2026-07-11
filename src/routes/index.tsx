@@ -640,10 +640,47 @@ function Reviews() {
 
 function LeadForm() {
   const [submitted, setSubmitted] = useState(false);
-  const handle = (e: FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
+
+  const handle = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 5000);
+    setSubmitting(true);
+    setSubmitError(false);
+    setSubmitted(false);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    const formUrl =
+      "https://docs.google.com/forms/d/e/1FAIpQLSeyRnYIMCl3ouDgMfGkZBK57ccIeIk6e6nlYmoZubRaoLdOsA/formResponse";
+    const payload = new URLSearchParams();
+    payload.append("entry.647419092", formData.get("name") as string);
+    payload.append("entry.1504466253", formData.get("phone") as string);
+    payload.append("entry.1645082311", formData.get("requirement") as string);
+    payload.append("entry.616237414", formData.get("location") as string);
+    payload.append("entry.1733021043", formData.get("budget") as string);
+    payload.append("entry.1656301094", formData.get("details") as string);
+    payload.append("entry.128907828", formData.get("requirement") as string);
+
+    try {
+      await fetch(formUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: payload.toString(),
+      });
+      setSubmitted(true);
+      form.reset();
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (error) {
+      console.error("Lead form submission error:", error);
+      setSubmitError(true);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -695,13 +732,24 @@ function LeadForm() {
           <button
             type="submit"
             className="mt-6 w-full rounded-lg py-3.5 text-base font-bold transition-transform hover:-translate-y-0.5"
-            style={{ background: GOLD, color: NAVY }}
+            style={{
+              background: GOLD,
+              color: NAVY,
+              opacity: submitting ? 0.7 : 1,
+              cursor: submitting ? "not-allowed" : undefined,
+            }}
+            disabled={submitting}
           >
-            Submit Requirement
+            {submitting ? "Submitting..." : "Submit Requirement"}
           </button>
           {submitted && (
             <p className="mt-4 text-center text-sm font-medium" style={{ color: "#0a7f3f" }}>
               ✅ Thank you! We will get back to you shortly.
+            </p>
+          )}
+          {submitError && (
+            <p className="mt-4 text-center text-sm font-medium" style={{ color: "#dc2626" }}>
+              Unable to submit. Please try again or call us directly.
             </p>
           )}
           <p className="mt-4 text-center text-xs" style={{ color: MUTED }}>
@@ -747,7 +795,7 @@ function Contact() {
         </div>
         <div className="mt-16 overflow-hidden rounded-2xl shadow-xl" style={{ border: `1px solid ${BORDER}` }}>
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m12!1m3!1d3888.312688467123!2d77.61629347576562!3d12.93877578737338!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae15229e6c1a61%3A0x26a05f018e301661!2sEasyFind%20Property%20Solutions!5e0!3m2!1sen!2sin!4v1720658700000!5m2!1sen!2sin"
+            src="https://www.google.com/maps/embed/v1/place?q=EasyFind+Property+Solutions&key=AIzaSyBO7b3cNlqOYlPbOZfNpR1m5gK7qX9mK5w&center=12.9387758,77.6188684&zoom=15&maptype=roadmap"
             width="100%"
             height="450"
             style={{ border: 0 }}
