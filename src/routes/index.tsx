@@ -185,8 +185,8 @@ const NAV_LINKS = [
   { label: "Contact", href: "#contact" },
 ];
 
-const NAVY = "#1A3A5C";
-const GOLD = "#C9A84C";
+export const NAVY = "#1A3A5C";
+export const GOLD = "#C9A84C";
 const SURFACE = "#F8F9FB";
 const TEXT = "#1A1A2E";
 const MUTED = "#6B7280";
