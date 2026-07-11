@@ -110,6 +110,7 @@ const ContactForm: React.FC = () => {
             autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onBlur={(e) => setName(e.target.value.trim())}
             disabled={isSubmitting}
             className={inputBase}
             style={{ borderColor: "#E5E7EB" }}
@@ -135,7 +136,10 @@ const ContactForm: React.FC = () => {
               maxLength={10}
               placeholder="10-digit mobile"
               value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                if (val !== phone) setPhone(val);
+              }}
               disabled={isSubmitting}
               className={inputBase}
               style={{ borderColor: "#E5E7EB" }}

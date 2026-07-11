@@ -259,9 +259,18 @@ function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 8);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
     onScroll();
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -897,6 +906,7 @@ function LeadForm() {
                     style={inputStyle}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    onBlur={(e) => setName(e.target.value.trim())}
                     disabled={isSubmitting}
                     autoComplete="name"
                   />
@@ -906,7 +916,7 @@ function LeadForm() {
                     required
                     style={inputStyle}
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => setPhone(e.target.value.replace(/[^\d+ ]/g, ""))}
                     disabled={isSubmitting}
                     autoComplete="tel"
                     inputMode="tel"
