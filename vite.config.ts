@@ -3,5 +3,18 @@ import react from "@vitejs/plugin-react";
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 
 export default defineConfig({
-  plugins: [react(), TanStackRouterVite()],
+  plugins: [
+    TanStackRouterVite(),
+    react(),
+  ],
+  resolve: {
+    alias: {
+      "@": "/src",
+    },
+  },
+  build: {
+    rollupOptions: {
+      external: ['node:async_hooks'],
+    },
+  },
 });
