@@ -35,7 +35,7 @@ export const Route = createFileRoute("/")({
 
 const BUSINESS_CONFIG = {
   phone: "+91 91483 38801",
-  email: "zeid.easyfind@gmail.com",
+  email: "info@easyfindprops.com",
   googleMapsUrl: "https://maps.app.goo.gl/Z211hsPcT1g9ZJ9U8",
   address:
     "A Block, Prestige Atlanta, 1, 80 Feet Rd, 3rd Block, Koramangala 8th Block, Bengaluru 560034",
