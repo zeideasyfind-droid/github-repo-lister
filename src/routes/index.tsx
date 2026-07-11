@@ -795,7 +795,7 @@ function Contact() {
         </div>
         <div className="mt-16 overflow-hidden rounded-2xl shadow-xl" style={{ border: `1px solid ${BORDER}` }}>
           <iframe
-            src="https://www.google.com/maps/embed/v1/place?q=EasyFind+Property+Solutions&key=AIzaSyBO7b3cNlqOYlPbOZfNpR1m5gK7qX9mK5w&center=12.9387758,77.6188684&zoom=15&maptype=roadmap"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.312688467123!2d77.61629347576562!3d12.93877578737338!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae15229e6c1a61%3A0x26a05f018e301661!2sEasyFind%20Property%20Solutions!5e0!3m2!1sen!2sin!4v1752206400000!5m2!1sen!2sin"
             width="100%"
             height="450"
             style={{ border: 0 }}
