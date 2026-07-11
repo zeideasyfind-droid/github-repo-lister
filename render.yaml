@@ -2,5 +2,5 @@ services:
   - type: web
     name: easyfind-website
     runtime: static
-    buildCommand: bun run build
+    buildCommand: pnpm build
     staticPublishPath: ./dist
