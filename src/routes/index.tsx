@@ -879,9 +879,7 @@ function LeadForm() {
                 <h3 className="text-lg font-bold" style={{ color: NAVY }}>
                   Thank you! We've received your requirement.
                 </h3>
-                <p className="mt-2 text-sm text-gray-500">
-                  Our team will get back to you shortly.
-                </p>
+                <p className="mt-2 text-sm text-gray-500">Our team will get back to you shortly.</p>
                 <button
                   type="button"
                   onClick={() => setSucceeded(false)}
@@ -892,87 +890,87 @@ function LeadForm() {
                 </button>
               </div>
             ) : (
-            <form onSubmit={handleSubmit} noValidate className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <input
-                  type="text"
-                  placeholder="Name"
-                  required
+              <form onSubmit={handleSubmit} noValidate className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    required
+                    style={inputStyle}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={isSubmitting}
+                    autoComplete="name"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Phone Number"
+                    required
+                    style={inputStyle}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    disabled={isSubmitting}
+                    autoComplete="tel"
+                    inputMode="tel"
+                  />
+                </div>
+                <select
                   style={inputStyle}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
                   disabled={isSubmitting}
-                  autoComplete="name"
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone Number"
-                  required
+                >
+                  <option>Looking to Rent</option>
+                  <option>Looking to Buy</option>
+                  <option>Looking to Sell</option>
+                  <option>Property Management</option>
+                  <option>Tenant Support</option>
+                  <option>Investment Advisory</option>
+                  <option>Relocation Help</option>
+                </select>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <input
+                    type="text"
+                    placeholder="Preferred Location"
+                    style={inputStyle}
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    disabled={isSubmitting}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Budget"
+                    style={inputStyle}
+                    value={budget}
+                    onChange={(e) => setBudget(e.target.value)}
+                    disabled={isSubmitting}
+                  />
+                </div>
+                <textarea
+                  placeholder="Additional Details"
+                  rows={4}
                   style={inputStyle}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  disabled={isSubmitting}
-                  autoComplete="tel"
-                  inputMode="tel"
-                />
-              </div>
-              <select
-                style={inputStyle}
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                disabled={isSubmitting}
-              >
-                <option>Looking to Rent</option>
-                <option>Looking to Buy</option>
-                <option>Looking to Sell</option>
-                <option>Property Management</option>
-                <option>Tenant Support</option>
-                <option>Investment Advisory</option>
-                <option>Relocation Help</option>
-              </select>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <input
-                  type="text"
-                  placeholder="Preferred Location"
-                  style={inputStyle}
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  value={details}
+                  onChange={(e) => setDetails(e.target.value)}
                   disabled={isSubmitting}
                 />
-                <input
-                  type="text"
-                  placeholder="Budget"
-                  style={inputStyle}
-                  value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
+                {error && (
+                  <p className="text-sm font-medium text-red-600" role="alert">
+                    {error}
+                  </p>
+                )}
+                <button
+                  type="submit"
                   disabled={isSubmitting}
-                />
-              </div>
-              <textarea
-                placeholder="Additional Details"
-                rows={4}
-                style={inputStyle}
-                value={details}
-                onChange={(e) => setDetails(e.target.value)}
-                disabled={isSubmitting}
-              />
-              {error && (
-                <p className="text-sm font-medium text-red-600" role="alert">
-                  {error}
+                  className="w-full rounded-lg py-4 text-base font-bold shadow-lg transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
+                  style={{ background: GOLD, color: NAVY }}
+                >
+                  {isSubmitting ? "Sending..." : "Submit Requirement"}
+                </button>
+                <p className="text-center text-xs font-medium text-gray-400">
+                  We will get back to you shortly. No spam. No sharing of your data.
                 </p>
-              )}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-lg py-4 text-base font-bold shadow-lg transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
-                style={{ background: GOLD, color: NAVY }}
-              >
-                {isSubmitting ? "Sending..." : "Submit Requirement"}
-              </button>
-              <p className="text-center text-xs font-medium text-gray-400">
-                We will get back to you shortly. No spam. No sharing of your data.
-              </p>
-            </form>
+              </form>
             )}
           </div>
           <div>
