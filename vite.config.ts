@@ -12,6 +12,9 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  css: {
+    lightningcss: false,
+  },
   build: {
     rollupOptions: {
       external: ['node:async_hooks'],
