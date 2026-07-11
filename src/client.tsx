@@ -21,13 +21,21 @@ declare module '@tanstack/react-router' {
 }
 
 const rootElement = document.getElementById('root')
-if (!rootElement?.innerHTML) {
-  const root = createRoot(rootElement!)
-  root.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
-    </StrictMode>,
-  )
+
+if (rootElement) {
+  try {
+    const root = createRoot(rootElement)
+    root.render(
+      <StrictMode>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </StrictMode>,
+    )
+  } catch (error) {
+    console.error('Failed to render app:', error)
+    rootElement.innerHTML = '<div style="padding: 20px; color: red;">Error loading application</div>'
+  }
+} else {
+  console.error('Root element not found')
 }
