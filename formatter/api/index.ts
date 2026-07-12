@@ -1,9 +1,8 @@
 /**
  * formatter/api/index.ts
  *
- * Barrel export for all API handlers.
+ * Barrel export for formatter API handlers.
+ * Lean placeholder until API implementation begins.
  */
 
-export { formatPropertyHandler, healthCheck } from './formatter.handler';
-export * from './validators';
-export * from './errorHandler';
+// TODO: Export only implemented handlers when they exist.
