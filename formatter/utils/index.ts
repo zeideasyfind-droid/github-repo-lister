@@ -1,11 +1,8 @@
 /**
  * formatter/utils/index.ts
  *
- * Barrel export for all utility functions and constants.
+ * Barrel export for formatter utilities.
+ * Lean placeholder until utility implementation begins.
  */
 
-export * from './formatters';
-export * from './parsers';
-export * from './constants';
-export * from './validators';
-export * from './regex';
+// TODO: Export only implemented utilities when ready.
