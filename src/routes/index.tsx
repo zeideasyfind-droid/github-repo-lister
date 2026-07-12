@@ -743,188 +743,123 @@ function WhyUs() {
   );
 }
 
-type Neighborhood = {
+type Cluster = {
   id: string;
   name: string;
-  tagline: string;
-  badge: string;
-  avgRent: string;
-  demand: string;
-  yieldRange: string;
-  connectivity: number;
-  socialScore: number;
-  demandScore: number;
-  parks: string[];
-  perks: string[];
-  typicalPrice: number;
-  typicalRent: number;
-  typicalMaint: number;
+  positioning: string;
+  localities: string[];
+  anchors: string[];
+  brokerNote: string;
+  span: string; // asymmetric bento sizing
 };
 
-const EAST_BANGALORE_NEIGHBORHOODS: Neighborhood[] = [
+// NOTE: Rent scenarios, demand profile, yield estimates and broker feedback
+// are intentionally left as placeholders. Cluster names, locality groupings
+// and anchors are structural — the owner should confirm & replace copy below
+// with real, verified data before publishing quantitative claims.
+const EAST_BLR_CLUSTERS: Cluster[] = [
   {
-    id: "whitefield",
-    name: "Whitefield",
-    tagline: "The Crown Jewel of Bengaluru's Tech Economy",
-    badge: "The Original IT Hub",
-    avgRent: "₹38,000 - ₹48,000",
-    demand: "Very High",
-    yieldRange: "4.5% - 5.2%",
-    connectivity: 92,
-    socialScore: 94,
-    demandScore: 95,
-    parks: ["ITPL", "GR Tech Park", "Sigma Tech Park", "Brigade Tech Gardens"],
-    perks: [
-      "Seamless purple line metro connectivity directly into office sectors",
-      "Proximity to high-end social spots: Phoenix Marketcity & VR Bengaluru",
-      "Home to elite international schools and premium gated townships",
-    ],
-    typicalPrice: 11000000,
-    typicalRent: 42000,
-    typicalMaint: 36000,
+    id: "whitefield-itpl",
+    name: "Whitefield & ITPL Corridor",
+    positioning: "Established IT township — mature social infrastructure, premium gated societies.",
+    localities: ["Whitefield Main", "ITPL", "Kundalahalli", "Varthur Road"],
+    anchors: ["ITPL", "Brigade Tech Gardens", "Sigma Tech Park"],
+    brokerNote: "To be confirmed by EasyFind ground team.",
+    span: "sm:col-span-4",
   },
   {
-    id: "bellandur-orr",
-    name: "Bellandur / Outer Ring Road (ORR)",
-    tagline: "The Hyper-Growth Business Corridor",
-    badge: "The High-Density Tech Belt",
-    avgRent: "₹45,000 - ₹58,000",
-    demand: "Extremely High",
-    yieldRange: "4.8% - 5.5%",
-    connectivity: 95,
-    socialScore: 90,
-    demandScore: 98,
-    parks: ["RMZ Ecospace", "Embassy TechVillage", "Cessna Business Park", "Prestige Tech Park"],
-    perks: [
-      "Highest rental demand density in India with minimal vacancy cycles",
-      "Immediate, walking-distance access to multinational tech giants",
-      "Upcoming ORR metro line to provide unprecedented connectivity",
-    ],
-    typicalPrice: 13500000,
-    typicalRent: 52000,
-    typicalMaint: 48000,
+    id: "orr-tech-belt",
+    name: "ORR Tech Belt",
+    positioning: "Bangalore's densest office corridor — walk-to-work rentals, high tenant churn.",
+    localities: ["Bellandur", "Kadubeesanahalli", "Marathahalli", "Kaikondrahalli"],
+    anchors: ["Embassy TechVillage", "RMZ Ecospace", "Prestige Tech Park"],
+    brokerNote: "To be confirmed by EasyFind ground team.",
+    span: "sm:col-span-2",
   },
   {
-    id: "sarjapur-road",
-    name: "Sarjapur Road",
-    tagline: "The Premier Premium Residential & Education Hub",
-    badge: "Families & Elite School Belt",
-    avgRent: "₹35,000 - ₹44,000",
-    demand: "High",
-    yieldRange: "4.3% - 5.0%",
-    connectivity: 88,
-    socialScore: 96,
-    demandScore: 90,
-    parks: ["Wipro Campus", "RGA Tech Park", "Exora Business Park"],
-    perks: [
-      "Access to Bangalore's finest educational institutes (Greenwood, TISB)",
-      "Excellent cross-corridor connectivity linking Electronic City, ORR, and HSR Layout",
-      "Wide, spacious luxury villa communities and premium green layout projects",
-    ],
-    typicalPrice: 9500000,
-    typicalRent: 38000,
-    typicalMaint: 30000,
+    id: "sarjapur-corridor",
+    name: "Sarjapur Road Corridor",
+    positioning: "Family & school belt — newer townships, villa communities, growing tech hubs.",
+    localities: ["Sarjapur Road", "Kasavanahalli", "Harlur", "Haralur Road"],
+    anchors: ["Wipro Sarjapur", "RGA Tech Park", "International Schools cluster"],
+    brokerNote: "To be confirmed by EasyFind ground team.",
+    span: "sm:col-span-3",
   },
   {
-    id: "marathahalli",
-    name: "Marathahalli",
-    tagline: "The Central Transit and Commercial Core",
-    badge: "The Transit Hub",
-    avgRent: "₹30,000 - ₹38,000",
-    demand: "Very High",
-    yieldRange: "4.4% - 5.1%",
-    connectivity: 94,
-    socialScore: 88,
-    demandScore: 92,
-    parks: ["Prestige Tech Park", "JP Morgan Campus", "Salarpuria Hallmark"],
-    perks: [
-      "Unmatched geographic centrality connecting East and South Bangalore seamlessly",
-      "Extremely robust local commerce, markets, and hypermarket options",
-      "High rentability across both mid-income and luxury categories",
-    ],
-    typicalPrice: 8500000,
-    typicalRent: 34000,
-    typicalMaint: 24000,
+    id: "hoodi-mahadevapura",
+    name: "Hoodi & Mahadevapura",
+    positioning: "Mid-premium residential pockets adjacent to Whitefield — value-focused tenants.",
+    localities: ["Hoodi", "Brookefield", "Mahadevapura", "KR Puram"],
+    anchors: ["SAP Labs", "Prestige Shantiniketan", "Purple Line Metro"],
+    brokerNote: "To be confirmed by EasyFind ground team.",
+    span: "sm:col-span-3",
   },
   {
-    id: "hoodi-brookfield",
-    name: "Hoodi & Brookfield",
-    tagline: "The Modern Mid-Premium Residential Oasis",
-    badge: "Strategic Tech Slices",
-    avgRent: "₹32,000 - ₹40,000",
-    demand: "High",
-    yieldRange: "4.2% - 4.9%",
-    connectivity: 90,
-    socialScore: 92,
-    demandScore: 88,
-    parks: ["SAP Labs", "Vydehi Hospital & Research", "SJR I-Park"],
-    perks: [
-      "Quiet, peaceful residential communities with abundant green pockets",
-      "Direct Metro transit convenience (Hoodi Junction station nearby)",
-      "Highly attractive price points relative to primary Whitefield sectors",
-    ],
-    typicalPrice: 9000000,
-    typicalRent: 35000,
-    typicalMaint: 28000,
+    id: "indiranagar-domlur",
+    name: "Indiranagar & Old Airport Road",
+    positioning: "Established central-east — heritage neighbourhoods, F&B destinations, boutique inventory.",
+    localities: ["Indiranagar", "Domlur", "Old Airport Road", "CV Raman Nagar"],
+    anchors: ["Diamond District", "Embassy Golf Links", "Purple Line Metro"],
+    brokerNote: "To be confirmed by EasyFind ground team.",
+    span: "sm:col-span-6",
   },
 ];
 
+function TBCChip({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border border-dashed px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white/60 border-white/20">
+      <span className="h-1.5 w-1.5 rounded-full bg-[#C9A84C]/70" />
+      {children}
+    </span>
+  );
+}
+
 function EastBangaloreBento({
-  onSelectYieldPreset,
   onSelectFormPrefill,
 }: {
-  onSelectYieldPreset: (price: number, rent: number, maintenance: number) => void;
   onSelectFormPrefill: (type: string, location: string, details: string) => void;
 }) {
-  const [selectedId, setSelectedId] = useState("whitefield");
-  const selected =
-    EAST_BANGALORE_NEIGHBORHOODS.find((n) => n.id === selectedId) ||
-    EAST_BANGALORE_NEIGHBORHOODS[0];
+  const [selectedId, setSelectedId] = useState<string>(EAST_BLR_CLUSTERS[0].id);
+  const selected = EAST_BLR_CLUSTERS.find((c) => c.id === selectedId) || EAST_BLR_CLUSTERS[0];
 
   return (
-    <section id="east-bangalore" className="py-16 md:py-24" style={{ background: SURFACE }}>
+    <section id="east-bangalore" className="py-20 md:py-28" style={{ background: SURFACE }}>
       <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <SectionLabel>East Bengaluru Hotspots</SectionLabel>
-        <SectionTitle>Interactive Neighborhood Bento Grid</SectionTitle>
+        <SectionLabel>East Bengaluru Focus</SectionLabel>
+        <SectionTitle>The East Bangalore Rental Map</SectionTitle>
         <p
           className="mx-auto mt-4 max-w-2xl text-center text-sm md:text-base leading-relaxed"
           style={{ color: MUTED }}
         >
-          Click on any neighborhood block below to explore real-time rental trends, nearby tech
-          parks, yields, and connectivity indices in East Bangalore.
+          Five curated clusters we work in every day. Rent scenarios, demand profiles and broker
+          feedback are being verified with our ground team — pick a cluster to preview the
+          structure.
         </p>
 
-        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-12">
-          {/* Left Column: Bento Grid of 5 neighborhoods (lg:col-span-7) */}
+        <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-12">
+          {/* Left: Bento of clusters */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-6 lg:col-span-7">
-            {EAST_BANGALORE_NEIGHBORHOODS.map((n) => {
-              const isSelected = n.id === selectedId;
-
-              // Let's vary the span classes for an asymmetrical "bento" feel
-              let spanClass = "sm:col-span-3";
-              if (n.id === "sarjapur-road") spanClass = "sm:col-span-4";
-              if (n.id === "marathahalli") spanClass = "sm:col-span-2";
-              if (n.id === "hoodi-brookfield") spanClass = "sm:col-span-6";
-
+            {EAST_BLR_CLUSTERS.map((c) => {
+              const isSelected = c.id === selectedId;
               return (
                 <button
-                  key={n.id}
-                  onClick={() => setSelectedId(n.id)}
-                  className={`group relative flex flex-col justify-between rounded-2xl p-6 text-left transition-all duration-300 ${spanClass} ${
+                  key={c.id}
+                  onClick={() => setSelectedId(c.id)}
+                  className={`group relative flex flex-col justify-between rounded-2xl p-6 text-left transition-all duration-300 ${c.span} ${
                     isSelected
-                      ? "bg-[#1A3A5C] text-white shadow-xl scale-[1.02] ring-2 ring-[#C9A84C]"
-                      : "bg-white hover:bg-gray-50 text-[#1A1A2E] shadow-sm hover:shadow-md"
+                      ? "bg-[#1A3A5C] text-white shadow-xl ring-1 ring-[#C9A84C]/60"
+                      : "bg-white hover:-translate-y-0.5 text-[#1A1A2E] shadow-sm hover:shadow-md"
                   }`}
                   style={{ border: isSelected ? "none" : `1px solid ${BORDER}` }}
                 >
                   <div className="w-full">
                     <div className="flex items-center justify-between">
                       <span
-                        className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
-                          isSelected ? "bg-white/15 text-[#C9A84C]" : "bg-[#F8F9FB] text-gray-500"
+                        className={`text-[10px] font-bold uppercase tracking-[0.14em] ${
+                          isSelected ? "text-[#C9A84C]" : "text-gray-400"
                         }`}
                       >
-                        {n.badge}
+                        Cluster
                       </span>
                       <MapPin
                         size={16}
@@ -935,52 +870,61 @@ function EastBangaloreBento({
                         }
                       />
                     </div>
-                    <h3 className="mt-4 text-lg font-extrabold tracking-tight">{n.name}</h3>
-                    <p
-                      className={`mt-2 text-xs line-clamp-2 ${isSelected ? "text-white/70" : "text-gray-500"}`}
+                    <h3
+                      className="mt-4 text-lg md:text-xl font-extrabold tracking-tight"
+                      style={{ fontFamily: "'Playfair Display', serif" }}
                     >
-                      {n.tagline}
+                      {c.name}
+                    </h3>
+                    <p
+                      className={`mt-2 text-xs leading-relaxed line-clamp-2 ${
+                        isSelected ? "text-white/70" : "text-gray-500"
+                      }`}
+                    >
+                      {c.positioning}
                     </p>
                   </div>
 
-                  <div className="mt-6 w-full pt-4 border-t border-dashed border-current/10 flex items-center justify-between">
-                    <div>
-                      <div className="text-[9px] uppercase tracking-wider opacity-60">
-                        Avg 2BHK Rent
-                      </div>
-                      <div className="text-xs font-bold mt-0.5">{n.avgRent.split(" - ")[0]}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-[9px] uppercase tracking-wider opacity-60">Demand</div>
+                  <div className="mt-6 flex flex-wrap gap-1.5">
+                    {c.localities.slice(0, 3).map((l) => (
                       <span
-                        className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded ${
+                        key={l}
+                        className={`text-[10px] font-medium px-2 py-0.5 rounded ${
                           isSelected
-                            ? "bg-white/10 text-white"
-                            : "bg-[#F8F9FB] text-emerald-600 font-semibold"
+                            ? "bg-white/10 text-white/80 border border-white/10"
+                            : "bg-[#F8F9FB] text-gray-500 border border-gray-100"
                         }`}
                       >
-                        {n.demand}
+                        {l}
                       </span>
-                    </div>
+                    ))}
+                    {c.localities.length > 3 && (
+                      <span
+                        className={`text-[10px] font-medium px-2 py-0.5 rounded ${
+                          isSelected ? "text-white/60" : "text-gray-400"
+                        }`}
+                      >
+                        +{c.localities.length - 3}
+                      </span>
+                    )}
                   </div>
                 </button>
               );
             })}
           </div>
 
-          {/* Right Column: Live Area Intelligence Portal (lg:col-span-5) */}
+          {/* Right: Cluster detail panel */}
           <div
             className="rounded-2xl p-6 md:p-8 text-white flex flex-col justify-between shadow-xl relative overflow-hidden lg:col-span-5"
-            style={{ background: "#1A3A5C" }}
+            style={{ background: NAVY }}
           >
-            {/* Background Accent */}
-            <div className="absolute right-0 top-0 -mr-16 -mt-16 h-40 w-40 rounded-full bg-[#C9A84C]/5 blur-3xl pointer-events-none" />
+            <div className="absolute right-0 top-0 -mr-16 -mt-16 h-40 w-40 rounded-full bg-[#C9A84C]/10 blur-3xl pointer-events-none" />
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-semibold tracking-wider uppercase text-white/60">
-                  Live Area Intelligence
+                <span className="h-1.5 w-1.5 rounded-full bg-[#C9A84C]" />
+                <span className="text-[11px] font-semibold tracking-[0.18em] uppercase text-white/60">
+                  Cluster Profile
                 </span>
               </div>
               <h3
@@ -989,137 +933,97 @@ function EastBangaloreBento({
               >
                 {selected.name}
               </h3>
-              <p className="mt-2 text-sm text-[#C9A84C] font-semibold tracking-wide">
-                {selected.tagline}
+              <p className="mt-3 text-sm text-white/75 leading-relaxed">
+                {selected.positioning}
               </p>
 
-              {/* Stats Highlights */}
-              <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl bg-white/5 p-4 border border-white/10">
-                <div>
-                  <div className="text-[10px] text-white/50 uppercase tracking-wider">
-                    Avg 2BHK Rent
-                  </div>
-                  <div className="text-base font-bold text-white mt-1">{selected.avgRent}</div>
-                  <div className="text-[9px] text-[#C9A84C] font-medium mt-0.5">
-                    MoM Trend Focus
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[10px] text-white/50 uppercase tracking-wider">
-                    Rental Yield
-                  </div>
-                  <div className="text-base font-bold text-[#C9A84C] mt-1">
-                    {selected.yieldRange}
-                  </div>
-                  <div className="text-[9px] text-white/50 font-medium mt-0.5">
-                    Top Tier in India
-                  </div>
-                </div>
-              </div>
-
-              {/* Interactive Metrics Scores */}
-              <div className="mt-6 space-y-4">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-white/60">
-                  Local Market Scores
-                </h4>
-
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-white/70">Connectivity Index (Metro/ORR)</span>
-                    <span className="font-bold text-[#C9A84C]">{selected.connectivity}/100</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${selected.connectivity}%`, backgroundColor: GOLD }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-white/70">Tenant Demand Density</span>
-                    <span className="font-bold text-[#C9A84C]">{selected.demandScore}/100</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-emerald-400 transition-all duration-500"
-                      style={{ width: `${selected.demandScore}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-white/70">Social Infrastructure Score</span>
-                    <span className="font-bold text-[#C9A84C]">{selected.socialScore}/100</span>
-                  </div>
-                  <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-sky-400 transition-all duration-500"
-                      style={{ width: `${selected.socialScore}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Major Tech Parks Nearby */}
+              {/* Localities */}
               <div className="mt-6">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-2">
-                  Primary IT Corridors
+                <h4 className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/50 mb-2">
+                  Locality Grouping
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
-                  {selected.parks.map((p) => (
+                  {selected.localities.map((l) => (
                     <span
-                      key={p}
-                      className="bg-white/10 text-white/90 text-[10px] font-medium px-2 py-0.5 rounded border border-white/5"
+                      key={l}
+                      className="bg-white/8 text-white/90 text-xs font-medium px-2.5 py-1 rounded-md border border-white/10"
                     >
-                      {p}
+                      {l}
                     </span>
                   ))}
                 </div>
               </div>
 
-              {/* Why We Recommend It */}
-              <div className="mt-6 space-y-2">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-2">
-                  EasyFind Expert Notes
+              {/* Anchors */}
+              <div className="mt-6">
+                <h4 className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/50 mb-2">
+                  Nearby Anchors
                 </h4>
-                {selected.perks.map((perk, i) => (
-                  <div key={i} className="flex gap-2 text-xs text-white/80 leading-relaxed">
-                    <div className="mt-1 h-1 w-1 shrink-0 rounded-full bg-[#C9A84C]" />
-                    <p>{perk}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {selected.anchors.map((a) => (
+                    <span
+                      key={a}
+                      className="text-white/70 text-[11px] font-medium px-2 py-0.5 rounded border border-white/10"
+                    >
+                      {a}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Data placeholders — to be confirmed */}
+              <div className="mt-6 grid grid-cols-1 gap-3">
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/60">
+                      Rent Scenarios
+                    </span>
+                    <TBCChip>To be confirmed</TBCChip>
                   </div>
-                ))}
+                  <p className="mt-1 text-[11px] text-white/50 leading-relaxed">
+                    Typical 2BHK / 3BHK bands to be published once verified with EasyFind's live
+                    listings.
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/60">
+                      Demand Profile
+                    </span>
+                    <TBCChip>To be confirmed</TBCChip>
+                  </div>
+                  <p className="mt-1 text-[11px] text-white/50 leading-relaxed">
+                    Tenant mix, average days-on-market and seasonality — pending internal data.
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/60">
+                      Broker Feedback
+                    </span>
+                    <TBCChip>To be confirmed</TBCChip>
+                  </div>
+                  <p className="mt-1 text-[11px] text-white/50 leading-relaxed">
+                    {selected.brokerNote}
+                  </p>
+                </div>
               </div>
             </div>
 
-            {/* CTA Actions */}
-            <div className="mt-8 pt-6 border-t border-white/10 grid grid-cols-2 gap-3">
+            {/* CTA */}
+            <div className="mt-8 pt-6 border-t border-white/10">
               <button
                 onClick={() =>
                   onSelectFormPrefill(
                     "Looking to Rent",
                     selected.name,
-                    `Hi, I am interested in viewing verified premium apartments or societies in ${selected.name}. Please contact me with curated options.`,
+                    `Hi, I'm interested in verified rental options in the ${selected.name} cluster (${selected.localities.join(", ")}). Please share curated listings.`,
                   )
                 }
-                className="w-full text-center py-2.5 px-3 rounded-lg font-bold text-xs transition-colors cursor-pointer"
+                className="w-full text-center py-3 px-4 rounded-lg font-bold text-sm transition-transform hover:scale-[1.01] cursor-pointer"
                 style={{ background: GOLD, color: NAVY }}
               >
-                Explore Properties
-              </button>
-              <button
-                onClick={() =>
-                  onSelectYieldPreset(
-                    selected.typicalPrice,
-                    selected.typicalRent,
-                    selected.typicalMaint,
-                  )
-                }
-                className="w-full text-center py-2.5 px-3 rounded-lg font-bold text-xs bg-white/10 hover:bg-white/20 text-white transition-colors border border-white/10 flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <Calculator size={12} /> Calculate Yield
+                Talk to a specialist for this cluster
               </button>
             </div>
           </div>
@@ -1130,33 +1034,15 @@ function EastBangaloreBento({
 }
 
 function YieldCalculator({
-  preset,
-  clearPreset,
   onSelectFormPrefill,
 }: {
-  preset: { price: number; rent: number; maintenance: number } | null;
-  clearPreset: () => void;
   onSelectFormPrefill: (type: string, location: string, details: string) => void;
 }) {
-  const [propertyValue, setPropertyValue] = useState(12000000); // 1.2 Cr default
-  const [monthlyRent, setMonthlyRent] = useState(45000); // 45k default
-  const [maintenance, setMaintenance] = useState(36000); // 36k default
-  const [animatePulse, setAnimatePulse] = useState(false);
+  // All inputs are user-provided. No fabricated benchmarks, no fake presets.
+  const [propertyValue, setPropertyValue] = useState(12000000); // ₹1.2 Cr — illustrative default
+  const [monthlyRent, setMonthlyRent] = useState(45000); // illustrative default
+  const [maintenance, setMaintenance] = useState(36000); // annual outgoings — illustrative default
 
-  // Sync with preset trigger
-  useEffect(() => {
-    if (preset) {
-      setPropertyValue(preset.price);
-      setMonthlyRent(preset.rent);
-      setMaintenance(preset.maintenance);
-      setAnimatePulse(true);
-      const timer = setTimeout(() => setAnimatePulse(false), 2000);
-      clearPreset();
-      return () => clearTimeout(timer);
-    }
-  }, [preset, clearPreset]);
-
-  // Formatter helpers
   const formatINR = (val: number) => {
     if (val >= 10000000) {
       return `₹${(val / 10000000).toFixed(2)} Crores`;
@@ -1166,83 +1052,40 @@ function YieldCalculator({
     return `₹${val.toLocaleString("en-IN")}`;
   };
 
-  // Math calculations
+  // Transparent math — nothing hidden, no market claims.
   const annualRent = monthlyRent * 12;
-  const grossYield = (annualRent / propertyValue) * 100;
-  const netYield = ((annualRent - maintenance) / propertyValue) * 100;
-
-  // Projection values (8% escalation YoY)
-  const projection = Array.from({ length: 5 }, (_, idx) => {
-    const year = idx + 1;
-    const factor = Math.pow(1.08, idx);
-    const mRent = monthlyRent * factor;
-    const aRent = mRent * 12;
-    return {
-      year,
-      monthly: Math.round(mRent),
-      annual: Math.round(aRent),
-    };
-  });
-
-  const cumulativeEarnings = projection.reduce((sum, item) => sum + item.annual, 0);
-
-  // Preset Buttons for landlords
-  const presets = [
-    { label: "Whitefield Average", val: 11000000, rent: 42000, maint: 36000 },
-    { label: "Bellandur Elite", val: 13500000, rent: 52000, maint: 48000 },
-    { label: "Sarjapur Family", val: 9500000, rent: 38000, maint: 30000 },
-    { label: "Koramangala Premium", val: 15000000, rent: 55000, maint: 42000 },
-    { label: "HSR Executive", val: 11500000, rent: 45000, maint: 32000 },
-  ];
+  const netAnnual = annualRent - maintenance;
+  const grossYield = propertyValue > 0 ? (annualRent / propertyValue) * 100 : 0;
+  const netYield = propertyValue > 0 ? (netAnnual / propertyValue) * 100 : 0;
 
   return (
     <section
       id="yield-calculator"
-      className="py-16 md:py-24 bg-white border-t border-b border-gray-100"
+      className="py-20 md:py-28 bg-white border-t border-b border-gray-100"
     >
       <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <SectionLabel>Earning Intelligence</SectionLabel>
+        <SectionLabel>Landlord Tools</SectionLabel>
         <SectionTitle>Landlord Rental Yield Calculator</SectionTitle>
         <p
           className="mx-auto mt-4 max-w-2xl text-center text-sm md:text-base leading-relaxed"
           style={{ color: MUTED }}
         >
-          Determine the gross and net investment yields of your Bengaluru asset. Adjust variables or
-          load standard micro-market indexes instantly.
+          A transparent way to check the gross and net rental yield of your property. Enter your
+          own numbers — we don't inject market averages or estimates.
         </p>
 
-        {/* Quick presets row */}
-        <div className="mt-8 flex flex-wrap justify-center gap-2">
-          {presets.map((p) => (
-            <button
-              key={p.label}
-              onClick={() => {
-                setPropertyValue(p.val);
-                setMonthlyRent(p.rent);
-                setMaintenance(p.maint);
-                setAnimatePulse(true);
-                setTimeout(() => setAnimatePulse(false), 1200);
-              }}
-              className="rounded-full border px-4 py-1.5 text-xs font-semibold hover:border-[#C9A84C] hover:text-[#1A3A5C] transition-all bg-gray-50 text-gray-600 hover:bg-white cursor-pointer"
-              style={{ borderColor: BORDER }}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-12">
+        <div className="mt-12 grid grid-cols-1 gap-8 lg:gap-12 lg:grid-cols-12">
           {/* Left Column: Sliders (lg:col-span-6) */}
           <div className="space-y-8 rounded-2xl bg-gray-50 p-6 md:p-8 border border-gray-200/60 lg:col-span-6">
             <h3 className="text-lg font-bold flex items-center gap-2" style={{ color: NAVY }}>
-              <Calculator size={20} className="text-[#C9A84C]" /> Customize Property Financials
+              <Calculator size={20} className="text-[#C9A84C]" /> Your property numbers
             </h3>
 
             {/* Slider 1: Property Value */}
             <div>
               <div className="flex justify-between items-center mb-3">
                 <span className="text-sm font-semibold" style={{ color: NAVY }}>
-                  Property Market Value
+                  Property market value
                 </span>
                 <span className="text-base font-extrabold text-[#C9A84C]">
                   {formatINR(propertyValue)}
@@ -1268,7 +1111,7 @@ function YieldCalculator({
             <div>
               <div className="flex justify-between items-center mb-3">
                 <span className="text-sm font-semibold" style={{ color: NAVY }}>
-                  Expected Monthly Rent
+                  Expected monthly rent
                 </span>
                 <span className="text-base font-extrabold text-[#C9A84C]">
                   ₹{monthlyRent.toLocaleString("en-IN")} / mo
@@ -1294,7 +1137,7 @@ function YieldCalculator({
             <div>
               <div className="flex justify-between items-center mb-3">
                 <span className="text-sm font-semibold" style={{ color: NAVY }}>
-                  Annual Outgoings & Maintenance
+                  Annual maintenance & outgoings
                 </span>
                 <span className="text-base font-extrabold text-gray-600">
                   ₹{maintenance.toLocaleString("en-IN")} / yr
@@ -1316,144 +1159,115 @@ function YieldCalculator({
               </div>
             </div>
 
-            {/* Helper Info */}
-            <div className="bg-white rounded-xl p-4 border border-gray-200 flex gap-3 text-xs leading-relaxed text-gray-500">
-              <HelpCircle size={18} className="shrink-0 text-gray-400 mt-0.5" />
-              <p>
-                <strong>Gross Yield</strong> measures the total rental return on purchase price
-                before costs. <strong>Net Yield</strong> factors in recurring costs like association
-                maintenance, landlord taxes, and minor repairs — giving you the true, bottom-line
-                return rate.
-              </p>
+            {/* Assumptions */}
+            <div className="bg-white rounded-xl p-4 border border-gray-200 text-xs leading-relaxed text-gray-500">
+              <div className="flex items-center gap-2 mb-2">
+                <HelpCircle size={16} className="text-gray-400" />
+                <span className="font-bold uppercase tracking-[0.14em] text-[11px] text-gray-500">
+                  Assumptions
+                </span>
+              </div>
+              <ul className="space-y-1.5 list-disc pl-4">
+                <li>All three inputs are provided by you. Nothing is auto-filled from market data.</li>
+                <li>Yields assume 12 months of occupancy (no vacancy loss).</li>
+                <li>
+                  Excludes one-time costs (registration, brokerage), home-loan interest, and
+                  income tax on rental income.
+                </li>
+              </ul>
             </div>
           </div>
 
           {/* Right Column: Calculations & Projections (lg:col-span-6) */}
           <div className="space-y-8 lg:col-span-6">
-            {/* Realtime Yield Gauges */}
-            <div
-              className={`rounded-2xl p-6 md:p-8 text-white transition-all duration-500 ${
-                animatePulse ? "ring-4 ring-[#C9A84C] scale-[1.01]" : ""
-              }`}
-              style={{ background: "#1A3A5C" }}
-            >
+            {/* Headline Yield Card */}
+            <div className="rounded-2xl p-6 md:p-8 text-white" style={{ background: NAVY }}>
               <div className="grid grid-cols-2 gap-4 divide-x divide-white/10 text-center">
                 <div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider">
+                  <div className="text-[11px] text-white/60 uppercase tracking-[0.14em]">
                     Gross Rental Yield
                   </div>
                   <div className="mt-2 text-3xl md:text-4xl font-extrabold tracking-tight text-white">
                     {grossYield.toFixed(2)}%
                   </div>
-                  <span className="text-[10px] text-[#C9A84C] font-semibold uppercase tracking-wider block mt-1">
-                    Industry Average: 3.2%
+                  <span className="text-[10px] text-white/50 block mt-1">
+                    Annual rent ÷ property value
                   </span>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider">
-                    True Net Yield
+                  <div className="text-[11px] text-white/60 uppercase tracking-[0.14em]">
+                    Net Rental Yield
                   </div>
                   <div className="mt-2 text-3xl md:text-4xl font-extrabold tracking-tight text-[#C9A84C]">
                     {netYield.toFixed(2)}%
                   </div>
-                  <span className="text-[10px] text-[#C9A84C] font-semibold uppercase tracking-wider block mt-1">
-                    Bangalore Lead Range
+                  <span className="text-[10px] text-white/50 block mt-1">
+                    (Annual rent − outgoings) ÷ property value
                   </span>
                 </div>
               </div>
-
-              {/* Dynamic feedback quote */}
-              <div className="mt-6 border-t border-white/10 pt-4 text-center text-xs text-white/70">
-                {netYield >= 4.5 ? (
-                  <p>
-                    🔥 <strong>Excellent yield profile!</strong> Your property is performing in the
-                    top 5% of Bangalore assets. Demand in this tier is extremely resilient.
-                  </p>
-                ) : netYield >= 3.5 ? (
-                  <p>
-                    📈 <strong>Healthy average return!</strong> Typical of high-demand gated
-                    apartments in premium East Bangalore corridors.
-                  </p>
-                ) : (
-                  <p>
-                    💡 <strong>Standard return.</strong> We can help optimize your maintenance
-                    outlays and reduce vacancy gaps to push your yield past 4.5%!
-                  </p>
-                )}
-              </div>
             </div>
 
-            {/* 5-Year Rental Accumulation Bar projections */}
-            <div className="rounded-2xl border p-6 md:p-8 border-gray-200/80">
+            {/* Breakdown */}
+            <div className="rounded-2xl border border-gray-200/80 p-6 md:p-8">
               <h4
-                className="text-sm font-extrabold tracking-tight uppercase mb-6 flex items-center justify-between"
+                className="text-[11px] font-bold uppercase tracking-[0.14em] mb-5"
                 style={{ color: NAVY }}
               >
-                <span>5-Year Cumulative Cashflow Forecast</span>
-                <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
-                  Avg 8% Annual Hike
-                </span>
+                Calculation breakdown
               </h4>
-
-              {/* Pure HTML Bar Chart */}
-              <div className="space-y-4">
-                {projection.map((proj) => {
-                  const maxWidth = projection[4].annual;
-                  const pct = (proj.annual / maxWidth) * 100;
-
-                  return (
-                    <div key={proj.year} className="flex items-center gap-4 text-xs">
-                      <div className="w-12 font-bold text-gray-500">Year {proj.year}</div>
-                      <div className="flex-1">
-                        <div className="flex justify-between font-semibold mb-1 text-gray-700">
-                          <span>₹{proj.monthly.toLocaleString("en-IN")}/mo</span>
-                          <span className="font-bold text-gray-900">
-                            ₹{proj.annual.toLocaleString("en-IN")}/yr
-                          </span>
-                        </div>
-                        <div className="h-4 w-full bg-gray-100 rounded-md overflow-hidden relative">
-                          <div
-                            className="h-full bg-[#1A3A5C]/80 rounded-md transition-all duration-500"
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-dashed border-gray-200 flex justify-between items-center text-sm">
-                <span className="font-semibold text-gray-500">Cumulative 5-Yr Earnings:</span>
-                <span className="text-base font-extrabold text-[#C9A84C]">
-                  ₹{cumulativeEarnings.toLocaleString("en-IN")}
-                </span>
-              </div>
+              <dl className="space-y-3 text-sm">
+                <div className="flex items-center justify-between border-b border-dashed border-gray-200 pb-3">
+                  <dt className="text-gray-500">Annual rent</dt>
+                  <dd className="font-bold text-gray-900">
+                    ₹{annualRent.toLocaleString("en-IN")}
+                    <span className="ml-2 text-[11px] font-normal text-gray-400">
+                      = ₹{monthlyRent.toLocaleString("en-IN")} × 12
+                    </span>
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between border-b border-dashed border-gray-200 pb-3">
+                  <dt className="text-gray-500">Annual maintenance & outgoings</dt>
+                  <dd className="font-bold text-gray-900">
+                    − ₹{maintenance.toLocaleString("en-IN")}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between border-b border-dashed border-gray-200 pb-3">
+                  <dt className="text-gray-500">Net annual income</dt>
+                  <dd className="font-bold text-gray-900">
+                    ₹{netAnnual.toLocaleString("en-IN")}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between">
+                  <dt className="text-gray-500">Property value</dt>
+                  <dd className="font-bold text-gray-900">{formatINR(propertyValue)}</dd>
+                </div>
+              </dl>
             </div>
 
-            {/* CTA action cards */}
+            {/* CTA */}
             <div className="bg-[#1A3A5C]/5 rounded-2xl p-6 border border-[#1A3A5C]/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="max-w-md">
                 <h4 className="font-extrabold text-sm text-[#1A3A5C] mb-1">
-                  Ready to Maximize Your Real Estate Revenue?
+                  Want a specialist to review these numbers?
                 </h4>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  EasyFind manages premium assets for over 500 owners with guaranteed rent
-                  transfers, 100% verified corporate tenants, and low maintenance fees.
+                  Share your inputs with an EasyFind advisor — we'll pressure-test the rent
+                  assumption against comparable listings and walk you through outgoings.
                 </p>
               </div>
               <button
                 onClick={() =>
                   onSelectFormPrefill(
-                    "Property Management",
-                    "Koramangala / East Bangalore",
-                    `Hi, I calculated my property yield using your online tool (Market Value: ${formatINR(propertyValue)}, expected rent: ₹${monthlyRent.toLocaleString()}/mo). Please contact me for a premium asset management yield audit!`,
+                    "Yield Review",
+                    "East Bangalore",
+                    `Hi, I ran the yield calculator with: Property value ${formatINR(propertyValue)}, expected rent ₹${monthlyRent.toLocaleString("en-IN")}/mo, annual outgoings ₹${maintenance.toLocaleString("en-IN")}. Please review these assumptions with me.`,
                   )
                 }
-                className="shrink-0 rounded-lg py-2.5 px-5 text-xs font-bold shadow-md hover:scale-105 transition-all text-center cursor-pointer"
+                className="shrink-0 rounded-lg py-2.5 px-5 text-xs font-bold shadow-sm hover:scale-[1.02] transition-transform text-center cursor-pointer"
                 style={{ background: GOLD, color: NAVY }}
               >
-                Request Free Yield Audit
+                Request a yield review
               </button>
             </div>
           </div>
@@ -2063,21 +1877,11 @@ function Footer() {
 }
 
 function Index() {
-  const [calcPreset, setCalcPreset] = useState<{
-    price: number;
-    rent: number;
-    maintenance: number;
-  } | null>(null);
   const [formPrefill, setFormPrefill] = useState<{
     type: string;
     location: string;
     details: string;
   } | null>(null);
-
-  const handleSelectYieldPreset = (price: number, rent: number, maintenance: number) => {
-    setCalcPreset({ price, rent, maintenance });
-    scrollToId("#yield-calculator");
-  };
 
   const handleSelectFormPrefill = (type: string, location: string, details: string) => {
     setFormPrefill({ type, location, details });
@@ -2093,15 +1897,8 @@ function Index() {
         <Services />
         <HowItWorks />
         <WhyUs />
-        <EastBangaloreBento
-          onSelectYieldPreset={handleSelectYieldPreset}
-          onSelectFormPrefill={handleSelectFormPrefill}
-        />
-        <YieldCalculator
-          preset={calcPreset}
-          clearPreset={() => setCalcPreset(null)}
-          onSelectFormPrefill={handleSelectFormPrefill}
-        />
+        <EastBangaloreBento onSelectFormPrefill={handleSelectFormPrefill} />
+        <YieldCalculator onSelectFormPrefill={handleSelectFormPrefill} />
         <Reviews />
         <LeadForm prefill={formPrefill} clearPrefill={() => setFormPrefill(null)} />
       </main>
