@@ -1034,33 +1034,15 @@ function EastBangaloreBento({
 }
 
 function YieldCalculator({
-  preset,
-  clearPreset,
   onSelectFormPrefill,
 }: {
-  preset: { price: number; rent: number; maintenance: number } | null;
-  clearPreset: () => void;
   onSelectFormPrefill: (type: string, location: string, details: string) => void;
 }) {
-  const [propertyValue, setPropertyValue] = useState(12000000); // 1.2 Cr default
-  const [monthlyRent, setMonthlyRent] = useState(45000); // 45k default
-  const [maintenance, setMaintenance] = useState(36000); // 36k default
-  const [animatePulse, setAnimatePulse] = useState(false);
+  // All inputs are user-provided. No fabricated benchmarks, no fake presets.
+  const [propertyValue, setPropertyValue] = useState(12000000); // ₹1.2 Cr — illustrative default
+  const [monthlyRent, setMonthlyRent] = useState(45000); // illustrative default
+  const [maintenance, setMaintenance] = useState(36000); // annual outgoings — illustrative default
 
-  // Sync with preset trigger
-  useEffect(() => {
-    if (preset) {
-      setPropertyValue(preset.price);
-      setMonthlyRent(preset.rent);
-      setMaintenance(preset.maintenance);
-      setAnimatePulse(true);
-      const timer = setTimeout(() => setAnimatePulse(false), 2000);
-      clearPreset();
-      return () => clearTimeout(timer);
-    }
-  }, [preset, clearPreset]);
-
-  // Formatter helpers
   const formatINR = (val: number) => {
     if (val >= 10000000) {
       return `₹${(val / 10000000).toFixed(2)} Crores`;
@@ -1070,83 +1052,40 @@ function YieldCalculator({
     return `₹${val.toLocaleString("en-IN")}`;
   };
 
-  // Math calculations
+  // Transparent math — nothing hidden, no market claims.
   const annualRent = monthlyRent * 12;
-  const grossYield = (annualRent / propertyValue) * 100;
-  const netYield = ((annualRent - maintenance) / propertyValue) * 100;
-
-  // Projection values (8% escalation YoY)
-  const projection = Array.from({ length: 5 }, (_, idx) => {
-    const year = idx + 1;
-    const factor = Math.pow(1.08, idx);
-    const mRent = monthlyRent * factor;
-    const aRent = mRent * 12;
-    return {
-      year,
-      monthly: Math.round(mRent),
-      annual: Math.round(aRent),
-    };
-  });
-
-  const cumulativeEarnings = projection.reduce((sum, item) => sum + item.annual, 0);
-
-  // Preset Buttons for landlords
-  const presets = [
-    { label: "Whitefield Average", val: 11000000, rent: 42000, maint: 36000 },
-    { label: "Bellandur Elite", val: 13500000, rent: 52000, maint: 48000 },
-    { label: "Sarjapur Family", val: 9500000, rent: 38000, maint: 30000 },
-    { label: "Koramangala Premium", val: 15000000, rent: 55000, maint: 42000 },
-    { label: "HSR Executive", val: 11500000, rent: 45000, maint: 32000 },
-  ];
+  const netAnnual = annualRent - maintenance;
+  const grossYield = propertyValue > 0 ? (annualRent / propertyValue) * 100 : 0;
+  const netYield = propertyValue > 0 ? (netAnnual / propertyValue) * 100 : 0;
 
   return (
     <section
       id="yield-calculator"
-      className="py-16 md:py-24 bg-white border-t border-b border-gray-100"
+      className="py-20 md:py-28 bg-white border-t border-b border-gray-100"
     >
       <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <SectionLabel>Earning Intelligence</SectionLabel>
+        <SectionLabel>Landlord Tools</SectionLabel>
         <SectionTitle>Landlord Rental Yield Calculator</SectionTitle>
         <p
           className="mx-auto mt-4 max-w-2xl text-center text-sm md:text-base leading-relaxed"
           style={{ color: MUTED }}
         >
-          Determine the gross and net investment yields of your Bengaluru asset. Adjust variables or
-          load standard micro-market indexes instantly.
+          A transparent way to check the gross and net rental yield of your property. Enter your
+          own numbers — we don't inject market averages or estimates.
         </p>
 
-        {/* Quick presets row */}
-        <div className="mt-8 flex flex-wrap justify-center gap-2">
-          {presets.map((p) => (
-            <button
-              key={p.label}
-              onClick={() => {
-                setPropertyValue(p.val);
-                setMonthlyRent(p.rent);
-                setMaintenance(p.maint);
-                setAnimatePulse(true);
-                setTimeout(() => setAnimatePulse(false), 1200);
-              }}
-              className="rounded-full border px-4 py-1.5 text-xs font-semibold hover:border-[#C9A84C] hover:text-[#1A3A5C] transition-all bg-gray-50 text-gray-600 hover:bg-white cursor-pointer"
-              style={{ borderColor: BORDER }}
-            >
-              {p.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-12 grid grid-cols-1 gap-12 lg:grid-cols-12">
+        <div className="mt-12 grid grid-cols-1 gap-8 lg:gap-12 lg:grid-cols-12">
           {/* Left Column: Sliders (lg:col-span-6) */}
           <div className="space-y-8 rounded-2xl bg-gray-50 p-6 md:p-8 border border-gray-200/60 lg:col-span-6">
             <h3 className="text-lg font-bold flex items-center gap-2" style={{ color: NAVY }}>
-              <Calculator size={20} className="text-[#C9A84C]" /> Customize Property Financials
+              <Calculator size={20} className="text-[#C9A84C]" /> Your property numbers
             </h3>
 
             {/* Slider 1: Property Value */}
             <div>
               <div className="flex justify-between items-center mb-3">
                 <span className="text-sm font-semibold" style={{ color: NAVY }}>
-                  Property Market Value
+                  Property market value
                 </span>
                 <span className="text-base font-extrabold text-[#C9A84C]">
                   {formatINR(propertyValue)}
@@ -1172,7 +1111,7 @@ function YieldCalculator({
             <div>
               <div className="flex justify-between items-center mb-3">
                 <span className="text-sm font-semibold" style={{ color: NAVY }}>
-                  Expected Monthly Rent
+                  Expected monthly rent
                 </span>
                 <span className="text-base font-extrabold text-[#C9A84C]">
                   ₹{monthlyRent.toLocaleString("en-IN")} / mo
@@ -1198,7 +1137,7 @@ function YieldCalculator({
             <div>
               <div className="flex justify-between items-center mb-3">
                 <span className="text-sm font-semibold" style={{ color: NAVY }}>
-                  Annual Outgoings & Maintenance
+                  Annual maintenance & outgoings
                 </span>
                 <span className="text-base font-extrabold text-gray-600">
                   ₹{maintenance.toLocaleString("en-IN")} / yr
@@ -1220,144 +1159,115 @@ function YieldCalculator({
               </div>
             </div>
 
-            {/* Helper Info */}
-            <div className="bg-white rounded-xl p-4 border border-gray-200 flex gap-3 text-xs leading-relaxed text-gray-500">
-              <HelpCircle size={18} className="shrink-0 text-gray-400 mt-0.5" />
-              <p>
-                <strong>Gross Yield</strong> measures the total rental return on purchase price
-                before costs. <strong>Net Yield</strong> factors in recurring costs like association
-                maintenance, landlord taxes, and minor repairs — giving you the true, bottom-line
-                return rate.
-              </p>
+            {/* Assumptions */}
+            <div className="bg-white rounded-xl p-4 border border-gray-200 text-xs leading-relaxed text-gray-500">
+              <div className="flex items-center gap-2 mb-2">
+                <HelpCircle size={16} className="text-gray-400" />
+                <span className="font-bold uppercase tracking-[0.14em] text-[11px] text-gray-500">
+                  Assumptions
+                </span>
+              </div>
+              <ul className="space-y-1.5 list-disc pl-4">
+                <li>All three inputs are provided by you. Nothing is auto-filled from market data.</li>
+                <li>Yields assume 12 months of occupancy (no vacancy loss).</li>
+                <li>
+                  Excludes one-time costs (registration, brokerage), home-loan interest, and
+                  income tax on rental income.
+                </li>
+              </ul>
             </div>
           </div>
 
           {/* Right Column: Calculations & Projections (lg:col-span-6) */}
           <div className="space-y-8 lg:col-span-6">
-            {/* Realtime Yield Gauges */}
-            <div
-              className={`rounded-2xl p-6 md:p-8 text-white transition-all duration-500 ${
-                animatePulse ? "ring-4 ring-[#C9A84C] scale-[1.01]" : ""
-              }`}
-              style={{ background: "#1A3A5C" }}
-            >
+            {/* Headline Yield Card */}
+            <div className="rounded-2xl p-6 md:p-8 text-white" style={{ background: NAVY }}>
               <div className="grid grid-cols-2 gap-4 divide-x divide-white/10 text-center">
                 <div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider">
+                  <div className="text-[11px] text-white/60 uppercase tracking-[0.14em]">
                     Gross Rental Yield
                   </div>
                   <div className="mt-2 text-3xl md:text-4xl font-extrabold tracking-tight text-white">
                     {grossYield.toFixed(2)}%
                   </div>
-                  <span className="text-[10px] text-[#C9A84C] font-semibold uppercase tracking-wider block mt-1">
-                    Industry Average: 3.2%
+                  <span className="text-[10px] text-white/50 block mt-1">
+                    Annual rent ÷ property value
                   </span>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider">
-                    True Net Yield
+                  <div className="text-[11px] text-white/60 uppercase tracking-[0.14em]">
+                    Net Rental Yield
                   </div>
                   <div className="mt-2 text-3xl md:text-4xl font-extrabold tracking-tight text-[#C9A84C]">
                     {netYield.toFixed(2)}%
                   </div>
-                  <span className="text-[10px] text-[#C9A84C] font-semibold uppercase tracking-wider block mt-1">
-                    Bangalore Lead Range
+                  <span className="text-[10px] text-white/50 block mt-1">
+                    (Annual rent − outgoings) ÷ property value
                   </span>
                 </div>
               </div>
-
-              {/* Dynamic feedback quote */}
-              <div className="mt-6 border-t border-white/10 pt-4 text-center text-xs text-white/70">
-                {netYield >= 4.5 ? (
-                  <p>
-                    🔥 <strong>Excellent yield profile!</strong> Your property is performing in the
-                    top 5% of Bangalore assets. Demand in this tier is extremely resilient.
-                  </p>
-                ) : netYield >= 3.5 ? (
-                  <p>
-                    📈 <strong>Healthy average return!</strong> Typical of high-demand gated
-                    apartments in premium East Bangalore corridors.
-                  </p>
-                ) : (
-                  <p>
-                    💡 <strong>Standard return.</strong> We can help optimize your maintenance
-                    outlays and reduce vacancy gaps to push your yield past 4.5%!
-                  </p>
-                )}
-              </div>
             </div>
 
-            {/* 5-Year Rental Accumulation Bar projections */}
-            <div className="rounded-2xl border p-6 md:p-8 border-gray-200/80">
+            {/* Breakdown */}
+            <div className="rounded-2xl border border-gray-200/80 p-6 md:p-8">
               <h4
-                className="text-sm font-extrabold tracking-tight uppercase mb-6 flex items-center justify-between"
+                className="text-[11px] font-bold uppercase tracking-[0.14em] mb-5"
                 style={{ color: NAVY }}
               >
-                <span>5-Year Cumulative Cashflow Forecast</span>
-                <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">
-                  Avg 8% Annual Hike
-                </span>
+                Calculation breakdown
               </h4>
-
-              {/* Pure HTML Bar Chart */}
-              <div className="space-y-4">
-                {projection.map((proj) => {
-                  const maxWidth = projection[4].annual;
-                  const pct = (proj.annual / maxWidth) * 100;
-
-                  return (
-                    <div key={proj.year} className="flex items-center gap-4 text-xs">
-                      <div className="w-12 font-bold text-gray-500">Year {proj.year}</div>
-                      <div className="flex-1">
-                        <div className="flex justify-between font-semibold mb-1 text-gray-700">
-                          <span>₹{proj.monthly.toLocaleString("en-IN")}/mo</span>
-                          <span className="font-bold text-gray-900">
-                            ₹{proj.annual.toLocaleString("en-IN")}/yr
-                          </span>
-                        </div>
-                        <div className="h-4 w-full bg-gray-100 rounded-md overflow-hidden relative">
-                          <div
-                            className="h-full bg-[#1A3A5C]/80 rounded-md transition-all duration-500"
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-dashed border-gray-200 flex justify-between items-center text-sm">
-                <span className="font-semibold text-gray-500">Cumulative 5-Yr Earnings:</span>
-                <span className="text-base font-extrabold text-[#C9A84C]">
-                  ₹{cumulativeEarnings.toLocaleString("en-IN")}
-                </span>
-              </div>
+              <dl className="space-y-3 text-sm">
+                <div className="flex items-center justify-between border-b border-dashed border-gray-200 pb-3">
+                  <dt className="text-gray-500">Annual rent</dt>
+                  <dd className="font-bold text-gray-900">
+                    ₹{annualRent.toLocaleString("en-IN")}
+                    <span className="ml-2 text-[11px] font-normal text-gray-400">
+                      = ₹{monthlyRent.toLocaleString("en-IN")} × 12
+                    </span>
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between border-b border-dashed border-gray-200 pb-3">
+                  <dt className="text-gray-500">Annual maintenance & outgoings</dt>
+                  <dd className="font-bold text-gray-900">
+                    − ₹{maintenance.toLocaleString("en-IN")}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between border-b border-dashed border-gray-200 pb-3">
+                  <dt className="text-gray-500">Net annual income</dt>
+                  <dd className="font-bold text-gray-900">
+                    ₹{netAnnual.toLocaleString("en-IN")}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between">
+                  <dt className="text-gray-500">Property value</dt>
+                  <dd className="font-bold text-gray-900">{formatINR(propertyValue)}</dd>
+                </div>
+              </dl>
             </div>
 
-            {/* CTA action cards */}
+            {/* CTA */}
             <div className="bg-[#1A3A5C]/5 rounded-2xl p-6 border border-[#1A3A5C]/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="max-w-md">
                 <h4 className="font-extrabold text-sm text-[#1A3A5C] mb-1">
-                  Ready to Maximize Your Real Estate Revenue?
+                  Want a specialist to review these numbers?
                 </h4>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  EasyFind manages premium assets for over 500 owners with guaranteed rent
-                  transfers, 100% verified corporate tenants, and low maintenance fees.
+                  Share your inputs with an EasyFind advisor — we'll pressure-test the rent
+                  assumption against comparable listings and walk you through outgoings.
                 </p>
               </div>
               <button
                 onClick={() =>
                   onSelectFormPrefill(
-                    "Property Management",
-                    "Koramangala / East Bangalore",
-                    `Hi, I calculated my property yield using your online tool (Market Value: ${formatINR(propertyValue)}, expected rent: ₹${monthlyRent.toLocaleString()}/mo). Please contact me for a premium asset management yield audit!`,
+                    "Yield Review",
+                    "East Bangalore",
+                    `Hi, I ran the yield calculator with: Property value ${formatINR(propertyValue)}, expected rent ₹${monthlyRent.toLocaleString("en-IN")}/mo, annual outgoings ₹${maintenance.toLocaleString("en-IN")}. Please review these assumptions with me.`,
                   )
                 }
-                className="shrink-0 rounded-lg py-2.5 px-5 text-xs font-bold shadow-md hover:scale-105 transition-all text-center cursor-pointer"
+                className="shrink-0 rounded-lg py-2.5 px-5 text-xs font-bold shadow-sm hover:scale-[1.02] transition-transform text-center cursor-pointer"
                 style={{ background: GOLD, color: NAVY }}
               >
-                Request Free Yield Audit
+                Request a yield review
               </button>
             </div>
           </div>
