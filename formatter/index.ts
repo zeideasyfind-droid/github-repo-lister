@@ -1,8 +1,10 @@
 /**
  * formatter/index.ts
  *
- * Main export file for the formatter module.
- * Lean placeholder until implementation begins.
+ * Main entry point for the EasyFind Formatter module.
+ * Exposes API handlers and core services.
  */
 
-// TODO: Add only real exports when formatter modules are implemented.
+export * from "./api";
+export * from "./services";
+export * from "./types";

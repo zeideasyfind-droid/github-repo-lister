@@ -10,7 +10,6 @@
 export interface FormatterRequest {
   propertyDetails: string;
   googleMapsUrl?: string;
-  additionalContext?: string;
 }
 
 /**
@@ -19,10 +18,9 @@ export interface FormatterRequest {
 export interface FormatterSuccessResponse {
   success: true;
   data: {
-    formatted: string;
-    parsed?: Record<string, unknown>;
+    formattedProperty: string;
+    parsedData: Record<string, unknown>;
   };
-  timestamp: string;
 }
 
 /**
@@ -31,11 +29,9 @@ export interface FormatterSuccessResponse {
 export interface FormatterErrorResponse {
   success: false;
   error: {
+    code: string;
     message: string;
-    code: number;
-    details?: Record<string, unknown>;
   };
-  timestamp: string;
 }
 
 /**

@@ -1,53 +1,56 @@
 /**
  * formatter/api/validators.ts
  *
- * PURPOSE: Request validation middleware and utilities
- *
- * RESPONSIBILITY:
- * - Validate incoming API requests
- * - Check required fields
- * - Sanitize input data
- * - Return validation errors
- *
- * FUTURE IMPLEMENTATION:
- * - Validate property details format
- * - Check for required fields (address, BHK, rent, etc)
- * - Validate data types
- * - Check URL format for Google Maps links
- * - Return descriptive validation errors
+ * PURPOSE: Request validation for the API layer
  */
+
+import { FormatterRequest } from "../types/api";
 
 /**
  * Validate formatter request payload
- * @param payload - Request body
- * @returns Validation result
  */
-export function validateFormatterRequest(payload: any): { valid: boolean; errors?: string[] } {
-  // TODO: Implement request validation
-  // 1. Check payload is object
-  // 2. Validate required fields
-  // 3. Validate field types
-  // 4. Validate field formats
-  // 5. Return validation result
-  throw new Error("Not implemented yet - Phase 2");
+export function validateFormatterRequest(payload: unknown): {
+  valid: boolean;
+  errors?: string[];
+} {
+  const errors: string[] = [];
+
+  if (!payload || typeof payload !== "object") {
+    return { valid: false, errors: ["Invalid request payload"] };
+  }
+
+  const request = payload as Partial<FormatterRequest>;
+
+  // 1. Validate propertyDetails
+  if (!request.propertyDetails || typeof request.propertyDetails !== "string") {
+    errors.push("propertyDetails is required and must be a string");
+  } else if (request.propertyDetails.trim().length === 0) {
+    errors.push("propertyDetails cannot be empty");
+  }
+
+  // 2. Validate googleMapsUrl if provided
+  if (request.googleMapsUrl !== undefined) {
+    if (typeof request.googleMapsUrl !== "string") {
+      errors.push("googleMapsUrl must be a string");
+    } else if (request.googleMapsUrl.trim().length > 0 && !isValidUrl(request.googleMapsUrl)) {
+      errors.push("googleMapsUrl must be a valid URL");
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors: errors.length > 0 ? errors : undefined,
+  };
 }
 
 /**
- * Validate property details
- * @param details - Raw property details
+ * Internal helper to validate URL
  */
-export function validatePropertyDetails(details: any): boolean {
-  // TODO: Implement property details validation
-  // Check: BHK format, rent format, address format, etc
-  throw new Error("Not implemented yet - Phase 2");
-}
-
-/**
- * Validate Google Maps URL format
- * @param url - URL to validate
- */
-export function validateGoogleMapsUrl(url: string): boolean {
-  // TODO: Implement Google Maps URL validation
-  // Check: URL is valid and from google.com/maps
-  throw new Error("Not implemented yet - Phase 2");
+function isValidUrl(url: string): boolean {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
 }
