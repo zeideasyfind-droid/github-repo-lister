@@ -1,174 +1,161 @@
 /**
  * formatter/services/propertyParser.ts
  *
- * PURPOSE: Deterministic property detail parser
+ * PURPOSE: Deterministic (regex/heuristic based) extraction of property
+ * fields from raw, freeform pasted text (WhatsApp messages, MagicBricks /
+ * Housing.com listings, broker notes, etc).
  *
  * RESPONSIBILITY:
- * - Extract structured fields from raw property text
- * - Handle WhatsApp messages, Housing listings, MagicBricks listings
- * - Never invent missing data — unknown fields left undefined
+ * - Never invent values. A field that isn't confidently detected in the
+ *   text is left `undefined` so the template formatter can render it blank.
+ * - Feed the standardizer for consistent display formatting (currency,
+ *   furnishing labels, etc).
  */
 
-export interface ParsedFields {
-  bhk?: string;
-  furnishing?: string;
-  bathrooms?: string;
-  balcony?: string;
-  rent?: number;
-  maintenance?: number;
-  deposit?: number;
-  sqft?: string;
-  floorCurrent?: string;
-  floorTotal?: string;
-  availableFrom?: string;
-  preferredTenant?: string;
-  pets?: string;
-  sqftNum?: number;
+import { ParsedProperty } from "../types/property";
+import { standardizeFurnishing, formatMonetaryValue, standardizeBathrooms } from "./standardizer";
+
+/**
+ * Converts a raw captured money string ("40k", "1.7L", "40,000", "170000")
+ * into a plain rupee amount, so it can be re-formatted consistently.
+ */
+function parseMoneyToNumber(raw: string): number | null {
+  const cleaned = raw.trim().toLowerCase().replace(/,/g, "");
+  const match = cleaned.match(/^(\d+(?:\.\d+)?)\s*(k|l|lakh|lakhs|thousand)?$/);
+  if (!match) return null;
+
+  const value = parseFloat(match[1]);
+  if (isNaN(value)) return null;
+
+  const unit = match[2];
+  if (unit === "k" || unit === "thousand") return value * 1000;
+  if (unit === "l" || unit === "lakh" || unit === "lakhs") return value * 100000;
+  return value;
 }
 
 /**
- * Parse a monetary string like "40k", "1.2L", "40000", "₹40k" into a rupee number
+ * Extracts a labelled monetary value (e.g. "Rent : 40k", "rent Rs.40,000")
  */
-export function parseMonetary(raw: string): number | undefined {
-  if (!raw) return undefined;
-  const cleaned = raw.replace(/[₹,\s]/g, "");
-  const match = cleaned.match(/^(\d+(?:\.\d+)?)\s*([kKlLcC][rR]?)?$/);
-  if (!match) return undefined;
-  const num = parseFloat(match[1]);
-  const suffix = (match[2] || "").toLowerCase();
-  if (suffix === "k") return Math.round(num * 1000);
-  if (suffix === "l") return Math.round(num * 100000);
-  if (suffix === "cr") return Math.round(num * 10000000);
-  return Math.round(num);
-}
-
-/**
- * Main parser — extracts all known fields from raw property text
- */
-export function parsePropertyDetails(text: string): ParsedFields {
-  const result: ParsedFields = {};
-
-  // ── BHK ──────────────────────────────────────────────────────────────────
-  const bhkMatch = text.match(/(\d+(?:\.\d+)?)\s*BHK/i);
-  if (bhkMatch) result.bhk = bhkMatch[1];
-
-  // ── Furnishing ───────────────────────────────────────────────────────────
-  const furnishMatch = text.match(
-    /\b(fully\s*furnished|semi[\s-]?furnished|unfurnished|un-furnished|semi\s*furnished)\b/i,
-  );
-  if (furnishMatch) result.furnishing = furnishMatch[1];
-
-  // ── Bathrooms ────────────────────────────────────────────────────────────
-  const bathMatch = text.match(/(\d+)\s*(?:bath(?:room)?s?|baths?)\b/i);
-  if (bathMatch) result.bathrooms = bathMatch[1];
-
-  // ── Balcony ──────────────────────────────────────────────────────────────
-  const balconyMatch = text.match(/(\d+)\s*balcon(?:y|ies)\b/i);
-  if (balconyMatch) {
-    result.balcony = balconyMatch[1];
-  } else if (/\bwith\s+balcony\b/i.test(text) || /\bbalcony\s*[:-]?\s*yes\b/i.test(text)) {
-    result.balcony = "1";
-  } else if (/\bno\s+balcony\b/i.test(text) || /\bbalcony\s*[:-]?\s*no\b/i.test(text)) {
-    result.balcony = "0";
-  }
-
-  // ── Rent ─────────────────────────────────────────────────────────────────
-  // Try labelled rent first
-  const rentLabelMatch = text.match(/\brent\s*[:-]?\s*₹?\s*(\d+(?:[.,]\d+)?)\s*([kKlLcC][rR]?)?/i);
-  if (rentLabelMatch) {
-    const raw = rentLabelMatch[1].replace(",", "") + (rentLabelMatch[2] || "");
-    result.rent = parseMonetary(raw);
-  } else {
-    // Try standalone ₹Xk / ₹X per month patterns
-    const rentStandaloneMatch = text.match(
-      /₹\s*(\d+(?:[.,]\d+)?)\s*([kKlLcC][rR]?)?\s*(?:\/?\s*(?:month|mo|pm|p\.m\.))/i,
+function extractMoney(text: string, labels: string[]): string | undefined {
+  for (const label of labels) {
+    const regex = new RegExp(
+      `${label}\\s*[:\\-]?\\s*(?:rs\\.?|inr|₹)?\\s*(\\d[\\d,]*(?:\\.\\d+)?\\s*(?:k|l|lakhs?|thousand)?)`,
+      "i",
     );
-    if (rentStandaloneMatch) {
-      const raw = rentStandaloneMatch[1].replace(",", "") + (rentStandaloneMatch[2] || "");
-      result.rent = parseMonetary(raw);
+    const match = text.match(regex);
+    if (match) {
+      const value = parseMoneyToNumber(match[1]);
+      if (value !== null) return formatMonetaryValue(value);
     }
   }
+  return undefined;
+}
 
-  // ── Maintenance ──────────────────────────────────────────────────────────
-  const maintMatch = text.match(
-    /\bmaint(?:enance)?\s*[:-]?\s*₹?\s*(\d+(?:[.,]\d+)?)\s*([kKlLcC][rR]?)?/i,
+function extractBHK(text: string): string | undefined {
+  const match = text.match(/(\d+(?:\.\d+)?)\s*-?\s*bhk/i);
+  return match ? `${match[1]} BHK` : undefined;
+}
+
+function extractBathrooms(text: string): string | undefined {
+  const match = text.match(/(\d+)\s*(?:bathrooms?|toilets?|washrooms?|baths?)\b/i);
+  return match ? standardizeBathrooms(match[1]) : undefined;
+}
+
+function extractBalcony(text: string): string | undefined {
+  const match = text.match(/(\d+)\s*balcon(?:y|ies)/i);
+  if (!match) return undefined;
+  const num = parseInt(match[1], 10);
+  return `${num} balcon${num > 1 ? "ies" : "y"}`;
+}
+
+function extractFurnishing(text: string): ParsedProperty["furnishing"] | undefined {
+  if (/semi[\s-]?furnished/i.test(text))
+    return standardizeFurnishing("semi") as ParsedProperty["furnishing"];
+  if (/(?:fully|full)[\s-]?furnished/i.test(text))
+    return standardizeFurnishing("fully") as ParsedProperty["furnishing"];
+  if (/\bunfurnished\b|\bun-furnished\b|\bbare\s*shell\b/i.test(text))
+    return standardizeFurnishing("un") as ParsedProperty["furnishing"];
+  return undefined;
+}
+
+function extractSqft(text: string): string | undefined {
+  const match = text.match(/(\d{3,6})\s*(?:sq\.?\s?ft\.?|sqft|square\s*feet|sft)\b/i);
+  return match ? match[1] : undefined;
+}
+
+function extractFloor(text: string): { floor?: string; floorTotal?: string } {
+  const withTotal = text.match(/(\d+)(?:st|nd|rd|th)?\s*floor\s*(?:\/|of|out\s*of)\s*(\d+)/i);
+  if (withTotal) return { floor: withTotal[1], floorTotal: withTotal[2] };
+
+  const slashForm = text.match(/floor\s*[:-]?\s*(\d+)\s*\/\s*(\d+)/i);
+  if (slashForm) return { floor: slashForm[1], floorTotal: slashForm[2] };
+
+  const floorOnly = text.match(/(\d+)(?:st|nd|rd|th)?\s*floor\b/i);
+  if (floorOnly) return { floor: floorOnly[1] };
+
+  const labelOnly = text.match(/floor\s*[:-]\s*(\d+)\b/i);
+  if (labelOnly) return { floor: labelOnly[1] };
+
+  return {};
+}
+
+function extractAvailableFrom(text: string): string | undefined {
+  if (
+    /ready\s*to\s*(?:move|occupy)|immediate(?:ly)?\s*available|available\s*immediately/i.test(text)
+  ) {
+    return "Ready to Occupy";
+  }
+  const match = text.match(
+    /available\s*(?:from)?\s*[:-]?\s*([0-3]?\d[a-z]*\s+[a-z]+(?:\s+\d{2,4})?)/i,
   );
-  if (maintMatch) {
-    const raw = maintMatch[1].replace(",", "") + (maintMatch[2] || "");
-    result.maintenance = parseMonetary(raw);
-  } else if (/\bmaintenance\s*[:-]?\s*inclu?d?e?d?\b/i.test(text)) {
-    result.maintenance = 0; // 0 signals "included"
-  }
+  return match ? match[1].trim() : undefined;
+}
 
-  // ── Deposit ──────────────────────────────────────────────────────────────
-  const depositMatch = text.match(
-    /\b(?:deposit|security\s*deposit)\s*[:-]?\s*₹?\s*(\d+(?:[.,]\d+)?)\s*([kKlLcC][rR]?)?/i,
-  );
-  if (depositMatch) {
-    const raw = depositMatch[1].replace(",", "") + (depositMatch[2] || "");
-    result.deposit = parseMonetary(raw);
-  }
+function extractPreferredTenant(text: string): string | undefined {
+  if (/family\s*preferred|families?\s*only|preferred\s*tenant\s*[:-]?\s*family/i.test(text))
+    return "Family";
+  if (/bachelors?\s*(?:allowed|preferred|only)?/i.test(text)) return "Bachelors";
+  if (/company\s*lease/i.test(text)) return "Company Lease";
+  if (/anyone|no\s*preference/i.test(text)) return "Anyone";
+  return undefined;
+}
 
-  // ── Sqft ─────────────────────────────────────────────────────────────────
-  const sqftMatch = text.match(/(\d[\d,]*)\s*(?:sq\.?\s*ft\.?|sqft|square\s*fe?e?t?)\b/i);
-  if (sqftMatch) {
-    result.sqft = sqftMatch[1].replace(",", "");
-    result.sqftNum = parseInt(result.sqft, 10);
-  }
+function extractPets(text: string): ParsedProperty["pets"] | undefined {
+  if (/no\s*pets|pets?\s*not\s*allowed|pet\s*free/i.test(text)) return "Not allowed";
+  if (/pets?\s*(?:allowed|friendly|ok|welcome)/i.test(text)) return "Allowed";
+  return undefined;
+}
 
-  // ── Floor ─────────────────────────────────────────────────────────────────
-  // "4/6 floor", "floor: 4/6", "4th floor out of 6", "4 out of 6"
-  const floorLabelMatch = text.match(/\bfloor\s*[:-]\s*(\d+)\s*(?:\/\s*(\d+))?/i);
-  // "Xth floor out of Y"
-  const floorOrdinalOutOf = text.match(/\b(\d+)(?:st|nd|rd|th)?\s*floor\s+out\s+of\s+(\d+)/i);
-  // plain fraction "4/6" near floor keyword
-  const floorFractMatch = text.match(/\b(\d+)\s*\/\s*(\d+)\s*(?:floor)?/i);
-  // single ordinal "3rd floor"
-  const floorSingleMatch = text.match(/\b(\d+)(?:st|nd|rd|th)\s*floor\b/i);
+function extractPropertyType(text: string): ParsedProperty["propertyType"] | undefined {
+  if (/\bvilla\b/i.test(text)) return "Villa";
+  if (/independent\s*house|independent\s*home/i.test(text)) return "Independent House";
+  if (/\bapartment\b|\bflat\b/i.test(text)) return "Apartment";
+  return undefined;
+}
 
-  if (floorLabelMatch) {
-    result.floorCurrent = floorLabelMatch[1];
-    if (floorLabelMatch[2]) result.floorTotal = floorLabelMatch[2];
-  } else if (floorOrdinalOutOf) {
-    result.floorCurrent = floorOrdinalOutOf[1];
-    result.floorTotal = floorOrdinalOutOf[2];
-  } else if (floorFractMatch) {
-    result.floorCurrent = floorFractMatch[1];
-    result.floorTotal = floorFractMatch[2];
-  } else if (floorSingleMatch) {
-    result.floorCurrent = floorSingleMatch[1];
-  }
+/**
+ * Parses raw sanitized property text into structured fields.
+ * Google Places-sourced fields (societyName, locality, communityType) are
+ * merged in separately by the formatter engine.
+ */
+export function parseProperty(rawText: string): ParsedProperty {
+  const text = rawText || "";
+  const { floor, floorTotal } = extractFloor(text);
 
-  // ── Available from ───────────────────────────────────────────────────────
-  // Require "available from" (both words) or explicit labels — avoid matching
-  // standalone "available" that appears mid-sentence
-  const availMatch = text.match(
-    /\b(?:available\s+from|vacant\s*from|possession)\s*[:-]?\s*([^\n,;]+)/i,
-  );
-  if (availMatch) {
-    result.availableFrom = availMatch[1].trim();
-  } else if (/\bimmediate(?:ly)?\b|\bready\s*to\s*(?:move|occupy)\b/i.test(text)) {
-    result.availableFrom = "Ready to Occupy";
-  }
-
-  // ── Preferred Tenant ─────────────────────────────────────────────────────
-  const tenantMatch = text.match(
-    /\b(?:preferred\s*tenant|suitable\s*for|tenant\s*(?:type|preference))\s*[:-]?\s*([^\n,;]+)/i,
-  );
-  if (tenantMatch) {
-    result.preferredTenant = tenantMatch[1].trim();
-  } else if (/\bfamilies?\b/i.test(text)) {
-    result.preferredTenant = "Family";
-  } else if (/\bbachelor(s|ette)?\b/i.test(text)) {
-    result.preferredTenant = "Bachelors";
-  }
-
-  // ── Pets ─────────────────────────────────────────────────────────────────
-  if (/\bpets?\s*(?:allowed|welcome|ok|yes)\b/i.test(text)) {
-    result.pets = "Allowed";
-  } else if (/\bno\s*pets?\b|\bpets?\s*(?:not\s*allowed|no)\b/i.test(text)) {
-    result.pets = "Not allowed";
-  }
-
-  return result;
+  return {
+    propertyType: extractPropertyType(text),
+    bhk: extractBHK(text),
+    bathrooms: extractBathrooms(text),
+    balcony: extractBalcony(text),
+    furnishing: extractFurnishing(text),
+    rent: extractMoney(text, ["rent"]),
+    maintenance: extractMoney(text, ["maintenance", "maint\\.?"]),
+    deposit: extractMoney(text, ["deposit", "security\\s*deposit", "advance"]),
+    sqft: extractSqft(text),
+    floor,
+    floorTotal,
+    availableFrom: extractAvailableFrom(text),
+    preferredTenant: extractPreferredTenant(text),
+    pets: extractPets(text),
+  };
 }

@@ -2,18 +2,15 @@
  * formatter/services/formatterEngine.ts
  *
  * Core orchestration for the EasyFind formatter.
- * Version 1: Deterministic pipeline — no AI.
- *
- * Pipeline:
- *   Input → Validate → Sanitize → Parse → Google Places → Community → Template → Output
  */
 
 import { validateInput } from "./validator";
 import { sanitizeInput } from "./sanitizer";
 import { resolveGoogleMapsLocation } from "./googlePlaces";
-import { detectCommunityType } from "./communityDetector";
-import { parsePropertyDetails } from "./propertyParser";
-import { renderTemplate } from "./templateFormatter";
+import { detectCommunityType, isSocietyName } from "./communityDetector";
+import { parseProperty } from "./propertyParser";
+import { formatWithTemplate } from "./templateFormatter";
+import { ParsedProperty } from "../types/property";
 
 export type FormatterInput = {
   propertyDetails: string;
@@ -49,37 +46,35 @@ export async function formatProperty(input: FormatterInput): Promise<FormatterRe
     // 2. Sanitize Input
     const sanitizedDetails = sanitizeInput(input.propertyDetails);
 
-    // 3. Parse property fields deterministically
-    const parsed = parsePropertyDetails(sanitizedDetails);
+    // 3. Parse property fields deterministically from the raw text
+    const parsed: ParsedProperty = parseProperty(sanitizedDetails);
 
-    // 4. Resolve Google Maps (if provided)
+    // 4. Resolve Google Maps (if provided) — authoritative source for
+    //    society name, locality, and community type
     let resolvedPlace = null;
-    let community = "Semi-gated";
+    let community: "Gated" | "Semi-gated" = "Semi-gated";
     if (input.googleMapsUrl) {
       resolvedPlace = await resolveGoogleMapsLocation(input.googleMapsUrl);
-
-      // 5. Detect Community
       community = detectCommunityType(resolvedPlace.placeName, resolvedPlace.placeType);
+      parsed.locality = resolvedPlace.locality !== "Unknown" ? resolvedPlace.locality : undefined;
+      parsed.societyName = isSocietyName(resolvedPlace.placeName)
+        ? resolvedPlace.placeName
+        : undefined;
     }
+    parsed.communityType = community;
+    parsed.googleMapsUrl = input.googleMapsUrl;
 
-    // 6. Render deterministic template
-    const formattedText = renderTemplate({
-      parsed,
-      resolvedPlace,
-      communityType: community,
-      googleMapsUrl: input.googleMapsUrl,
-    });
+    // 5. Template Formatting (deterministic, no AI)
+    const formattedText = formatWithTemplate(parsed);
 
     return {
       success: true,
       formattedText,
-      resolvedPlace: resolvedPlace
-        ? {
-            ...resolvedPlace,
-            community,
-            googleMapsUrl: input.googleMapsUrl,
-          }
-        : null,
+      resolvedPlace: {
+        ...resolvedPlace,
+        community,
+        googleMapsUrl: input.googleMapsUrl,
+      },
     };
   } catch (error: unknown) {
     console.error("Formatter Engine Error:", error);
