@@ -20,6 +20,8 @@ npm run build      # Production build to dist/
 npm run start      # Production server (serves dist/ + API)
 ```
 
+On Replit, the "Start application" workflow runs `npm run dev` and serves on port 5000 (bound to `0.0.0.0`), viewable in the webview preview. `GOOGLE_PLACES_API_KEY` and `GEMINI_API_KEY` are configured as Replit Secrets.
+
 ## Key URLs
 
 | Route | Description |
