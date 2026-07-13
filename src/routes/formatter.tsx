@@ -12,8 +12,7 @@ import {
   AlertCircle,
   ArrowLeft,
 } from "lucide-react";
-import { formatPropertyFn } from "./api.formatter";
-import type { FormatterResult } from "../../formatter/services/formatterEngine";
+import type { FormatterResponse } from "../../formatter/types/api";
 
 export const Route = createFileRoute("/formatter")({
   component: FormatterPage,
@@ -48,12 +47,18 @@ function FormatterPage() {
         googleMapsUrl,
       };
 
-      const result: FormatterResult = await formatPropertyFn({ data: payload });
+      const response = await fetch("/api/formatter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result: FormatterResponse = await response.json();
 
       if (result.success) {
-        setOutput(result.formattedText || "");
+        setOutput(result.data.formattedProperty || "");
       } else {
-        setError(result.errors?.join(", ") || "An error occurred during formatting");
+        setError(result.error?.message || "An error occurred during formatting");
       }
     } catch (err) {
       setError("Failed to connect to the formatter service. Please try again.");

@@ -15,11 +15,19 @@ export type FormatterInput = {
   googleMapsUrl?: string;
 };
 
+export type ResolvedPlaceInfo = {
+  placeName?: string;
+  locality?: string;
+  placeType?: string;
+  community?: string;
+  googleMapsUrl?: string;
+};
+
 export type FormatterResult = {
   success: boolean;
   formattedText?: string;
   errors?: string[];
-  resolvedPlace?: Record<string, unknown> | null;
+  resolvedPlace?: ResolvedPlaceInfo | null;
 };
 
 /**

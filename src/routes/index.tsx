@@ -797,7 +797,8 @@ const EAST_BLR_CLUSTERS: Cluster[] = [
   {
     id: "indiranagar-domlur",
     name: "Indiranagar & Old Airport Road",
-    positioning: "Established central-east — heritage neighbourhoods, F&B destinations, boutique inventory.",
+    positioning:
+      "Established central-east — heritage neighbourhoods, F&B destinations, boutique inventory.",
     localities: ["Indiranagar", "Domlur", "Old Airport Road", "CV Raman Nagar"],
     anchors: ["Diamond District", "Embassy Golf Links", "Purple Line Metro"],
     brokerNote: "To be confirmed by EasyFind ground team.",
@@ -933,9 +934,7 @@ function EastBangaloreBento({
               >
                 {selected.name}
               </h3>
-              <p className="mt-3 text-sm text-white/75 leading-relaxed">
-                {selected.positioning}
-              </p>
+              <p className="mt-3 text-sm text-white/75 leading-relaxed">{selected.positioning}</p>
 
               {/* Localities */}
               <div className="mt-6">
@@ -1070,8 +1069,8 @@ function YieldCalculator({
           className="mx-auto mt-4 max-w-2xl text-center text-sm md:text-base leading-relaxed"
           style={{ color: MUTED }}
         >
-          A transparent way to check the gross and net rental yield of your property. Enter your
-          own numbers — we don't inject market averages or estimates.
+          A transparent way to check the gross and net rental yield of your property. Enter your own
+          numbers — we don't inject market averages or estimates.
         </p>
 
         <div className="mt-12 grid grid-cols-1 gap-8 lg:gap-12 lg:grid-cols-12">
@@ -1168,11 +1167,13 @@ function YieldCalculator({
                 </span>
               </div>
               <ul className="space-y-1.5 list-disc pl-4">
-                <li>All three inputs are provided by you. Nothing is auto-filled from market data.</li>
+                <li>
+                  All three inputs are provided by you. Nothing is auto-filled from market data.
+                </li>
                 <li>Yields assume 12 months of occupancy (no vacancy loss).</li>
                 <li>
-                  Excludes one-time costs (registration, brokerage), home-loan interest, and
-                  income tax on rental income.
+                  Excludes one-time costs (registration, brokerage), home-loan interest, and income
+                  tax on rental income.
                 </li>
               </ul>
             </div>
@@ -1234,9 +1235,7 @@ function YieldCalculator({
                 </div>
                 <div className="flex items-center justify-between border-b border-dashed border-gray-200 pb-3">
                   <dt className="text-gray-500">Net annual income</dt>
-                  <dd className="font-bold text-gray-900">
-                    ₹{netAnnual.toLocaleString("en-IN")}
-                  </dd>
+                  <dd className="font-bold text-gray-900">₹{netAnnual.toLocaleString("en-IN")}</dd>
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-gray-500">Property value</dt>

@@ -19,7 +19,7 @@ export async function formatWithAI(
   systemPrompt: string,
 ): Promise<string> {
   const userPrompt = `Please format this property according to EasyFind SOP:\n\n${JSON.stringify(propertyDetails, null, 2)}`;
-  
+
   return formatWithAIProvider(systemPrompt, userPrompt, 0);
 }
 

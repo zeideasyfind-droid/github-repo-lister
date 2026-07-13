@@ -32,9 +32,9 @@ export async function resolveGoogleMapsLocation(
     // 1. Resolve short URL if necessary (basic follow redirect)
     let targetUrl = googleMapsUrl;
     if (googleMapsUrl.includes("goo.gl") || googleMapsUrl.includes("maps.app.goo.gl")) {
-      const response = await axios.get(googleMapsUrl, { 
+      const response = await axios.get(googleMapsUrl, {
         maxRedirects: 5,
-        validateStatus: (status) => status >= 200 && status < 400
+        validateStatus: (status) => status >= 200 && status < 400,
       });
       targetUrl = response.request.res.responseUrl || googleMapsUrl;
     }
@@ -93,7 +93,7 @@ export async function resolveGoogleMapsLocation(
               "X-Goog-Api-Key": apiKey,
               "X-Goog-FieldMask": "places.displayName,places.addressComponents,places.types",
             },
-          }
+          },
         );
 
         if (data.places && data.places.length > 0) {
