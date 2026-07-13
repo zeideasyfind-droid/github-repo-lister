@@ -36,16 +36,20 @@ const ContactForm: React.FC = () => {
     setError(null);
     setIsSubmitting(true);
     try {
-      await submitLead({
+      const res = await submitLead({
         name: trimmedName,
         phone: `+91 ${digits}`,
         requirement,
         source: "Website Hero Form",
       });
-      setSucceeded(true);
-      setName("");
-      setPhone("");
-      setRequirement("");
+      if (res.success) {
+        setSucceeded(true);
+        setName("");
+        setPhone("");
+        setRequirement("");
+      } else {
+        setError(res.error || "Something went wrong. Please try again or call us.");
+      }
     } catch (err) {
       console.error("Hero form submission failed:", err);
       setError("Something went wrong. Please try again or call us.");
