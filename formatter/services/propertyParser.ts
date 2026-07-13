@@ -79,21 +79,26 @@ function extractFurnishing(text: string): ParsedProperty["furnishing"] | undefin
 }
 
 function extractSqft(text: string): string | undefined {
-  const match = text.match(/(\d{3,6})\s*(?:sq\.?\s?ft\.?|sqft|square\s*feet|sft)\b/i);
+  // Use [^\S\r\n]* (horizontal whitespace only) so a number on the previous
+  // line (e.g. maintenance: 2500) is never mistaken for sqft.
+  const match = text.match(/(\d{3,6})[^\S\r\n]*(?:sq\.?[^\S\r\n]?ft\.?|sqft|square[^\S\r\n]*feet|sft)\b/i);
   return match ? match[1] : undefined;
 }
 
 function extractFloor(text: string): { floor?: string; floorTotal?: string } {
-  const withTotal = text.match(/(\d+)(?:st|nd|rd|th)?\s*floor\s*(?:\/|of|out\s*of)\s*(\d+)/i);
+  // "floor" or common abbreviation "flr"
+  const F = "(?:floor|flr)";
+
+  const withTotal = text.match(new RegExp(`(\\d+)(?:st|nd|rd|th)?\\s*${F}\\s*(?:\\/|of|out\\s*of)\\s*(\\d+)`, "i"));
   if (withTotal) return { floor: withTotal[1], floorTotal: withTotal[2] };
 
-  const slashForm = text.match(/floor\s*[:-]?\s*(\d+)\s*\/\s*(\d+)/i);
+  const slashForm = text.match(new RegExp(`${F}\\s*[:\\-]?\\s*(\\d+)\\s*\\/\\s*(\\d+)`, "i"));
   if (slashForm) return { floor: slashForm[1], floorTotal: slashForm[2] };
 
-  const floorOnly = text.match(/(\d+)(?:st|nd|rd|th)?\s*floor\b/i);
+  const floorOnly = text.match(new RegExp(`(\\d+)(?:st|nd|rd|th)?\\s*${F}\\b`, "i"));
   if (floorOnly) return { floor: floorOnly[1] };
 
-  const labelOnly = text.match(/floor\s*[:-]\s*(\d+)\b/i);
+  const labelOnly = text.match(new RegExp(`${F}\\s*[:\\-]\\s*(\\d+)\\b`, "i"));
   if (labelOnly) return { floor: labelOnly[1] };
 
   return {};
@@ -150,7 +155,7 @@ export function parseProperty(rawText: string): ParsedProperty {
     furnishing: extractFurnishing(text),
     rent: extractMoney(text, ["rent"]),
     maintenance: extractMoney(text, ["maintenance", "maint\\.?"]),
-    deposit: extractMoney(text, ["deposit", "security\\s*deposit", "advance"]),
+    deposit: extractMoney(text, ["deposit", "security\\s*deposit", "advance", "dep"]),
     sqft: extractSqft(text),
     floor,
     floorTotal,
