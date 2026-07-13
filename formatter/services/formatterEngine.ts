@@ -19,7 +19,7 @@ export type FormatterResult = {
   success: boolean;
   formattedText?: string;
   errors?: string[];
-  resolvedPlace?: unknown;
+  resolvedPlace?: Record<string, unknown> | null;
 };
 
 /**

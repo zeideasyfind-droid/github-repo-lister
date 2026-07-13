@@ -13,6 +13,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { formatPropertyFn } from "./api.formatter";
+import type { FormatterResult } from "../../formatter/services/formatterEngine";
 
 export const Route = createFileRoute("/formatter")({
   component: FormatterPage,
@@ -47,7 +48,7 @@ function FormatterPage() {
         googleMapsUrl,
       };
 
-      const result = await formatPropertyFn({ data: payload });
+      const result: FormatterResult = await formatPropertyFn({ data: payload });
 
       if (result.success) {
         setOutput(result.formattedText || "");
